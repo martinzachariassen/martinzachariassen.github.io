@@ -16,10 +16,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'npm'
@@ -30,15 +30,18 @@ jobs:
       - name: Build the project
         run: npm run build
 
+      - name: Check dist folder size
+        run: du -sh dist
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: github-pages  # Artifact name that deploy-pages expects
-          path: dist          # Path to the build folder
+          name: github-pages
+          path: dist
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build  # Ensures this job runs only after the build job finishes
+    needs: build
 
     permissions:
       pages: write
