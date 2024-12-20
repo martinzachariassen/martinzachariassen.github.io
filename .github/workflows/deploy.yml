@@ -41,7 +41,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: production-files
+          name: github-pages  # GitHub Pages expects this artifact name
           path: ./dist
 
   deploy:
@@ -57,7 +57,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: production-files
+          name: github-pages
           path: ./dist
 
       # Step 2: Deploy to GitHub Pages
