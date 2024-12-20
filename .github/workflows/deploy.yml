@@ -1,4 +1,4 @@
-name: Build project
+name: Build and Deploy Vite App to GitHub Pages
 
 on:
   push:
@@ -13,30 +13,35 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
+      # Step 2: Set up Node.js environment
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: 22
           cache: 'npm'
 
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm ci
 
+      # Step 4: Build the project
       - name: Build the project
         run: npm run build
 
+      # Step 5: Check dist folder size
       - name: Check dist folder size
         run: du -sh dist
 
+      # Step 6: Upload the built folder as an artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: github-pages
+          name: github-pages  # GitHub Pages expects this artifact name
           path: dist
 
   deploy:
@@ -48,5 +53,6 @@ jobs:
       id-token: write
 
     steps:
+      # Step 1: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
