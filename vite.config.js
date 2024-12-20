@@ -1,10 +1,12 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-    base: '/', // Adjust to '/repo-name/' if deploying to a subpath
+    resolve: {
+        preserveSymlinks: false, // Ensure Vite resolves actual file paths, not symlinks
+    },
     build: {
-        outDir: 'dist',
-        emptyOutDir: true,
-        sourcemap: false, // Optional: Prevent generating source maps
+        outDir: 'dist', // Specify output directory
+        emptyOutDir: true, // Clean the output directory before building
+        sourcemap: false, // Disable source maps to reduce output size
     },
 });
