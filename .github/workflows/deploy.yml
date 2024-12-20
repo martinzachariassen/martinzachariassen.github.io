@@ -39,7 +39,7 @@ jobs:
 
       # Step 6: Upload the built folder as an artifact
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           name: github-pages  # GitHub Pages expects this artifact name
           path: dist
