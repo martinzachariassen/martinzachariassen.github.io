@@ -1,8 +1,10 @@
+import { defineConfig } from 'vite';
+
 export default defineConfig({
-    base: '/', // Use '/repo-name/' if deploying to a subpath
+    base: '/', // Adjust to '/repo-name/' if deploying to a subpath
     build: {
         outDir: 'dist',
-        emptyOutDir: true, // Ensures a clean build
-        sourcemap: false, // Prevent unnecessary source maps
+        emptyOutDir: true,
+        sourcemap: false, // Optional: Prevent generating source maps
     },
 });
