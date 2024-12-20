@@ -42,7 +42,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: github-pages  # GitHub Pages expects this artifact name
-          path: ./dist
+          path: dist
 
   deploy:
     runs-on: ubuntu-latest
@@ -55,10 +55,10 @@ jobs:
     steps:
       # Step 1: Download artifact
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: github-pages
-          path: ./dist
+          path: dist
 
       # Step 2: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
