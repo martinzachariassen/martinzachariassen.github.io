@@ -1,1 +1,35 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Splash Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    .shadow-text {
+      text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center">
+<div class="container mx-auto px-6 text-center md:text-left flex flex-col md:flex-row items-center justify-center md:space-x-10">
+  <div class="max-w-md">
+    <h1 class="text-5xl md:text-6xl font-bold shadow-text leading-tight">
+      Hello.<br>
+      I am <span class="text-yellow-400">Martin</span>
+    </h1>
+    <p class="text-gray-400 mt-4 text-lg">
+      Backend developer specializing in building robust APIs, scalable core systems, and event-driven architectures. Experienced in crafting seamless integrations for modern distributed applications.
+    </p>
+  </div>
+
+  <div class="mt-8 md:mt-0">
+    <img src="/images/martin.jpg" alt="Your Image" class="w-64 md:w-80 rounded-lg shadow-lg">
+  </div>
+</div>
+</body>
+</html>
