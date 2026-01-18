@@ -1,104 +1,13 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<!doctype html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Crafting the Backbone of Modern Applications</title>
-
-    <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-M2E35PYWYV"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-M2E35PYWYV");
-    </script>
-
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font -->
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap");
-      body {
-        font-family: "Poppins", sans-serif;
-      }
-    </style>
-
-    <!-- Favicon -->
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="images/favicon/favicon-16x16.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="images/favicon/favicon-32x32.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="192x192"
-      href="images/favicon/android-chrome-192x192.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="512x512"
-      href="images/favicon/android-chrome-512x512.png"
-    />
-    <link rel="apple-touch-icon" href="images/favicon/apple-touch-icon.png" />
+    <meta name="description" content="Martin (mlz) — backend developer. Terminal-style homepage." />
+    <title>mlz.no</title>
   </head>
-
-  <body class="bg-black text-white font-sans">
-    <header
-      class="h-screen flex items-center justify-center text-center bg-black relative"
-    >
-      <div
-        class="container mx-auto max-w-screen-lg px-4 md:px-6 lg:px-8 xl:px-10 2xl:px-12 grid grid-cols-1 md:grid-cols-2 gap-6 items-center"
-      >
-        <!-- Text Section -->
-        <div class="order-2 md:order-1 max-w-xl md:ml-4">
-          <h1 class="text-4xl md:text-5xl font-bold text-white">
-            Hello. <br />
-            I am <span class="text-yellow-400">Martin</span>
-          </h1>
-          <p class="mt-4 text-base md:text-lg text-gray-300">
-            Backend developer specializing in building robust APIs, scalable
-            core systems, and event-driven architectures. Experienced in
-            crafting seamless integrations for modern distributed applications.
-          </p>
-          <div
-            class="mt-8 flex flex-col md:flex-row gap-4 justify-center md:justify-center"
-          >
-            <a
-              href="https://github.com/martinzachariassen"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="bg-gray-900 border border-yellow-400 text-yellow-400 px-6 py-3 rounded-md font-semibold hover:bg-yellow-400 hover:text-black hover:shadow-lg transition"
-            >
-              Check Out My GitHub
-            </a>
-          </div>
-        </div>
-
-        <!-- Image Section -->
-        <div class="order-1 md:order-2 flex justify-center">
-          <img
-            src="/images/martin.jpg"
-            alt="Martin"
-            class="rounded-lg shadow-lg w-48 h-48 sm:w-60 sm:h-60 md:w-80 md:h-80 object-cover transform hover:scale-105 transition duration-300"
-          />
-        </div>
-      </div>
-    </header>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
