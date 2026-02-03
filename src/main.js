@@ -105,12 +105,24 @@ function appTemplate() {
         <div class="title">mlz.no — terminal</div>
       </div>
 
-      <div class="screen">
+      <div id="screen" class="screen" tabindex="0">
         <div id="out" class="output" role="log" aria-live="polite"></div>
 
         <div class="promptRow">
-          <div class="prompt">mlz@oslo:~$</div>
-          <input id="cmd" autocomplete="off" spellcheck="false" autofocus />
+          <div class="prompt" aria-hidden="true">
+            <span class="p-user">mlz</span><span class="p-at">@</span><span class="p-host">oslo</span><span class="p-colon">:</span><span class="p-path">~</span><span class="p-sym">$</span>
+          </div>
+          <input
+            id="cmd"
+            aria-label="Command input"
+            autocomplete="off"
+            spellcheck="false"
+            autocapitalize="none"
+            autocorrect="off"
+            inputmode="text"
+            enterkeyhint="send"
+            autofocus
+          />
         </div>
 
         <div class="hint">Try: <span class="accent">help</span>, <span class="accent">about</span>, <span class="accent">links</span></div>
@@ -121,15 +133,59 @@ function appTemplate() {
 
 document.querySelector("#app").innerHTML = appTemplate();
 
+const screen = document.querySelector("#screen");
 const out = document.querySelector("#out");
 const cmd = document.querySelector("#cmd");
+
+function scrollToBottom() {
+  out.scrollTop = out.scrollHeight;
+}
+
+function focusCmd({ scroll = true } = {}) {
+  cmd.focus({ preventScroll: !scroll });
+  if (scroll) cmd.scrollIntoView({ block: "nearest" });
+}
+
+function syncViewport() {
+  const vv = window.visualViewport;
+  if (!vv) {
+    document.documentElement.style.setProperty("--kbd", "0px");
+    return;
+  }
+
+  // Approximate keyboard overlap.
+  const innerH = window.innerHeight;
+  const kbd = Math.max(0, innerH - vv.height - vv.offsetTop);
+  document.documentElement.style.setProperty("--kbd", `${Math.round(kbd)}px`);
+  scrollToBottom();
+}
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", syncViewport);
+  window.visualViewport.addEventListener("scroll", syncViewport);
+}
+window.addEventListener("orientationchange", syncViewport);
+
+// Tap anywhere in the screen to start typing (but don't steal taps from links/buttons).
+screen.addEventListener("pointerdown", (e) => {
+  const t = e.target;
+  if (t instanceof HTMLElement) {
+    if (t.closest("a,button,input")) return;
+  }
+  focusCmd();
+});
+
+cmd.addEventListener("focus", () => {
+  syncViewport();
+  queueMicrotask(scrollToBottom);
+});
 
 function print(line, klass = "") {
   const div = document.createElement("div");
   div.className = `line ${klass}`.trim();
   div.innerHTML = toHtml(line);
   out.appendChild(div);
-  out.scrollTop = out.scrollHeight;
+  scrollToBottom();
 }
 
 function banner() {
@@ -173,6 +229,22 @@ function runCommand(input) {
   for (const line of result.split("\n")) print(line);
 }
 
+function historyPrev() {
+  if (state.history.length === 0) return;
+  state.idx = Math.max(0, state.idx - 1);
+  cmd.value = state.history[state.idx] ?? "";
+  queueMicrotask(() => cmd.setSelectionRange(cmd.value.length, cmd.value.length));
+}
+
+function historyNext() {
+  if (state.history.length === 0) return;
+  state.idx = Math.min(state.history.length, state.idx + 1);
+  cmd.value = state.idx === state.history.length ? "" : (state.history[state.idx] ?? "");
+  queueMicrotask(() => cmd.setSelectionRange(cmd.value.length, cmd.value.length));
+}
+
+// (removed touch control buttons)
+
 cmd.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
@@ -183,25 +255,21 @@ cmd.addEventListener("keydown", (e) => {
     }
     runCommand(value);
     cmd.value = "";
+    syncViewport();
     return;
   }
 
   // history navigation
   if (e.key === "ArrowUp") {
     e.preventDefault();
-    if (state.history.length === 0) return;
-    state.idx = Math.max(0, state.idx - 1);
-    cmd.value = state.history[state.idx] ?? "";
-    queueMicrotask(() => cmd.setSelectionRange(cmd.value.length, cmd.value.length));
+    historyPrev();
   }
 
   if (e.key === "ArrowDown") {
     e.preventDefault();
-    if (state.history.length === 0) return;
-    state.idx = Math.min(state.history.length, state.idx + 1);
-    cmd.value = state.idx === state.history.length ? "" : (state.history[state.idx] ?? "");
-    queueMicrotask(() => cmd.setSelectionRange(cmd.value.length, cmd.value.length));
+    historyNext();
   }
 });
 
 banner();
+syncViewport();

@@ -1,21 +1,30 @@
 :root {
-  --bg: #0b0f14;
-  --fg: #c9d1d9;
-  --dim: #8b949e;
-  --accent: #7ee787;
-  --warn: #ffa657;
-  --err: #ff7b72;
-  --border: rgba(201, 209, 217, 0.12);
-  --font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  /* Tokyo Night (storm) inspired */
+  --bg: #1a1b26;
+  --fg: #c0caf5;
+  --dim: #9aa5ce;
+  --accent: #7aa2f7;
+  --warn: #e0af68;
+  --err: #f7768e;
+  --border: rgba(192, 202, 245, 0.14);
+  --font: "JetBrains Mono NL", "JetBrainsMono Nerd Font", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --kbd: 0px;
+  --terminal-h: min(72dvh, 680px);
+
+  /* Extra colors */
+  --cyan: #7dcfff;
+  --green: #9ece6a;
+  --magenta: #bb9af7;
 }
 
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 body {
   margin: 0;
-  background: radial-gradient(1200px 800px at 20% 10%, rgba(126, 231, 135, 0.06), transparent 55%),
-              radial-gradient(900px 700px at 80% 60%, rgba(88, 166, 255, 0.06), transparent 55%),
-              var(--bg);
+  background:
+    radial-gradient(1200px 800px at 20% 10%, rgba(122, 162, 247, 0.12), transparent 55%),
+    radial-gradient(900px 700px at 80% 60%, rgba(158, 206, 106, 0.10), transparent 55%),
+    var(--bg);
   color: var(--fg);
   font-family: var(--font);
 }
@@ -34,14 +43,14 @@ body {
   align-items: center;
   gap: 10px;
   padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.025);
   border-bottom: 1px solid var(--border);
 }
 
 .dots { display: flex; gap: 8px; }
 .dot {
   width: 12px; height: 12px; border-radius: 50%;
-  background: rgba(201, 209, 217, 0.18);
+  background: rgba(192, 202, 245, 0.18);
 }
 
 .title {
@@ -51,10 +60,12 @@ body {
 }
 
 .screen {
-  padding: 16px 16px 10px 16px;
-  min-height: min(72vh, 680px);
+  padding: 16px 16px calc(10px + var(--kbd) + env(safe-area-inset-bottom)) 16px;
+  height: var(--terminal-h);
+  min-height: 0;
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 
 .output {
@@ -62,7 +73,38 @@ body {
   line-height: 1.55;
   font-size: 14px;
   color: var(--fg);
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0; /* critical: allow scrolling instead of forcing parent growth */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 6px; /* room for scrollbar */
+
+  /* Scrollbar styling (Firefox) */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(122, 162, 247, 0.55) rgba(0, 0, 0, 0);
+}
+
+/* Scrollbar styling (Chrome/Safari/Edge) */
+.output::-webkit-scrollbar {
+  width: 10px;
+}
+
+.output::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0);
+  border-radius: 999px;
+}
+
+.output::-webkit-scrollbar-thumb {
+  background: rgba(122, 162, 247, 0.45);
+  border: 2px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+
+.output::-webkit-scrollbar-thumb:hover {
+  background: rgba(122, 162, 247, 0.60);
+  border: 2px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
 }
 
 .line { margin: 2px 0; }
@@ -77,12 +119,26 @@ body {
   gap: 10px;
   padding-top: 10px;
   border-top: 1px solid var(--border);
+  flex: 0 0 auto;
 }
 
 .prompt {
   color: var(--accent);
   user-select: none;
+  white-space: nowrap;
 }
+
+.p-user { color: var(--green); font-weight: 700; }
+.p-at { color: var(--dim); }
+.p-host { color: var(--cyan); font-weight: 700; }
+.p-colon { color: var(--dim); }
+.p-path { color: var(--magenta); }
+.p-sym { color: var(--accent); font-weight: 700; padding-left: 2px; }
+
+/* Extra output colors (inspired by modern prompts) */
+.info { color: var(--cyan); }
+.ok { color: var(--green); }
+.em { color: var(--magenta); }
 
 #cmd {
   flex: 1;
@@ -91,19 +147,27 @@ body {
   background: transparent;
   color: var(--fg);
   font: inherit;
-  padding: 0;
+  padding: 6px 0;
+  min-height: 40px; /* touch target */
 }
 
 .hint {
   margin-top: 8px;
   font-size: 12px;
   color: var(--dim);
+  flex: 0 0 auto;
 }
 
-a { color: #58a6ff; text-decoration: none; }
+a { color: #7dcfff; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 @media (max-width: 640px) {
   .terminal { margin: 18px; }
-  .screen { min-height: 70vh; }
+  :root { --terminal-h: 70dvh; }
+  .screen {
+    height: var(--terminal-h);
+    padding: 14px 14px calc(12px + var(--kbd) + env(safe-area-inset-bottom)) 14px;
+  }
+  .output { font-size: 15px; }
+  .promptRow { gap: 8px; }
 }
