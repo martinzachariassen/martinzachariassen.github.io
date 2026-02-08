@@ -217,10 +217,15 @@ const COMMANDS = {
 
   about() {
     return [
-      "Martin (mlz) — backend developer.",
+      "Hi! I'm Martin - a driven developer and architect.",
       "",
-      "I build reliable, observable services and batch pipelines.",
-      "Bias: correctness, explicit boundaries, and boring operations.",
+      "I like building systems that actually work in practice.",
+      "Focus: scalability, robustness, and sustainable solutions over time.",
+      "",
+      "I thrive at the intersection of engineering, operations, and architecture —",
+      "from design to production debugging.",
+      "",
+      "Keywords: clear priorities, transparency, and continuous learning.",
       "",
       "Type 'stack' or 'projects'.",
     ].join("\n");
@@ -228,30 +233,36 @@ const COMMANDS = {
 
   stack() {
     return [
-      "Current stack (typical):",
-      "  - Java / Spring Boot",
-      "  - SQL (Postgres), Flyway/Liquibase",
-      "  - Messaging (Pub/Sub / queues), outbox patterns",
-      "  - CI/CD, Docker",
-      "  - Observability: logs/metrics/tracing",
+      "Strengths / focus areas:",
+      "  - System design: distributed solutions, integrations, domain systems",
+      "  - Ops & DevOps: secure + automated deployments, stability, reliability",
+      "  - Observability: logs, metrics, and insight in distributed applications",
+      "  - Async systems: messaging flows, error handling, resilient processing",
+      "  - Performance: optimizing process flow and memory usage",
+      "",
+      "Working style:",
+      "  - End-to-end ownership of technical direction (perf, security, stability)",
+      "  - Pragmatic: simplify where it matters, be explicit about boundaries",
     ].join("\n");
   },
 
   projects() {
     return [
-      "Highlights:",
-      "  - Invoice ingestion + validation + transformation pipeline",
-      "  - Idempotent schedulers and reconciliation jobs",
-      "  - Blob storage immutability + audit trails",
+      "Highlights (typical deliveries):",
+      "  - Integrations across domain systems and critical business flows",
+      "  - Secure, automated processes for deploy, operations, and monitoring",
+      "  - Robust error handling in asynchronous messaging systems",
+      "  - Performance improvements: flow, resource usage, memory management",
+      "  - Better observability for faster debugging and deeper insight",
       "",
-      "Ask for details: type 'projects invoice'.",
+      "Details: type 'projects invoice'.",
     ].join("\n");
   },
 
   contact() {
     return [
       "Contact:",
-      "  email: you@example.com",
+      "  email: zachariassen@hey.com",
       "  location: Norway",
       "",
       "Replace this with your real email.",
