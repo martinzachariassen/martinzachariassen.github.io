@@ -7,6 +7,7 @@ import { parseCommand } from "../../terminal/parseCommand.js";
 import OutputLineComponent from "./OutputLine.js";
 import MatrixOverlay from "../../easter/MatrixOverlay.js";
 import { useKonami } from "../../easter/useKonami.js";
+import { useResize } from "./useResize.js";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -71,6 +72,7 @@ const INITIAL_STATE: TerminalState = {
 
 export default function Terminal() {
   const registry = useMemo(() => createCommandRegistry(), []);
+  const { height, onMouseDown: onResizeMouseDown } = useResize(480);
 
   const [state, dispatch] = useReducer(terminalReducer, INITIAL_STATE);
   const [inputValue, setInputValue] = useState("");
@@ -314,7 +316,12 @@ export default function Terminal() {
   // ── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="terminal" aria-label="Terminal style homepage">
+    <div className="terminal-wrapper">
+      <div
+        className="terminal"
+        aria-label="Terminal style homepage"
+        style={{ height: `${height}px` }}
+      >
       <div className="titlebar">
         <div className="dots" role="group" aria-label="Window controls">
           {([0, 1, 2] as const).map((i) => (
@@ -388,6 +395,20 @@ export default function Terminal() {
           <span className="accent">experience</span>,{" "}
           <span className="accent">open github</span>
         </div>
+      </div>
+      {/* closes .terminal */}
+      </div>
+
+      {/* Resize handle — desktop only via CSS */}
+      <div
+        className="resize-handle"
+        onMouseDown={onResizeMouseDown}
+        aria-hidden="true"
+      >
+        <span className="resize-dots" />
+      </div>
+      <div className="resize-hint" aria-hidden="true">
+        drag to resize ↕
       </div>
     </div>
   );
