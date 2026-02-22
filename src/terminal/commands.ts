@@ -76,12 +76,12 @@ export function createCommandRegistry(): CommandRegistry {
         text: "",
         parts: [
           { text: "guest", tone: "accent" },
-          { text: " — but you already knew that.", tone: "dim" },
+          { text: " - but you already knew that.", tone: "dim" },
         ],
       },
       { text: "The real question is: who am I?", tone: "dim" },
       { text: "" },
-      { text: "  Try 'about' to find out.", tone: "dim" },
+      { text: "Try 'about' to find out.", tone: "dim" },
     ],
   }));
 
