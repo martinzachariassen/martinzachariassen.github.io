@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { WELCOME_HEADER } from "../../terminal/headers.js";
 import "./Terminal.css";
 import { createCommandRegistry } from "../../terminal/commands.js";
 import type { CommandEffect, CommandResult, OutputLine } from "../../terminal/commands.js";
@@ -122,8 +121,6 @@ export default function Terminal() {
     dispatch({
       type: "append",
       lines: [
-        ...WELCOME_HEADER.split("\n").map((text) => ({ text, tone: "em ascii-header" })),
-        { text: "" },
         { text: "Type 'help' to see commands.", tone: "dim" },
         { text: "" },
         { text: "about  |  experience  |  skills  |  links  |  contact", tone: "dim" },
