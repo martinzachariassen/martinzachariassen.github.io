@@ -6,6 +6,11 @@
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 16px 60px rgba(0, 0, 0, 0.35);
+  /* Paint isolation — browser won't repaint outside this box */
+  contain: layout paint;
+  /* Hint to browser this element is independent */
+  content-visibility: auto;
+  contain-intrinsic-size: 0 680px;
 }
 
 @media (max-width: 640px) {

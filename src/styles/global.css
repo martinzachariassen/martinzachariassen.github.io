@@ -19,8 +19,11 @@
 }
 
 /* ─── Reset ──────────────────────────────────────────────────────────────── */
-* { box-sizing: border-box; }
+*  { box-sizing: border-box; }
 html, body { height: 100%; }
+
+/* Prevent layout shift while font loads */
+html { font-size: 16px; }
 
 /* ─── Body ───────────────────────────────────────────────────────────────── */
 body {
@@ -31,6 +34,12 @@ body {
     var(--bg);
   color: var(--fg);
   font-family: var(--font);
+  /* Prevent horizontal scroll causing CLS */
+  overflow-x: hidden;
+  /* Stable text rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* ─── Links ──────────────────────────────────────────────────────────────── */

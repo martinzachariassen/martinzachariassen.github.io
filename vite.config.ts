@@ -5,8 +5,18 @@ export default defineConfig({
   plugins: [react()],
 
   build: {
-    // Use esbuild (default, fastest) for minification — good enough for this bundle size
-    minify: "esbuild",
+    // Use terser for minification with aggressive compression and dead-code drops
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ["console.log", "console.info", "console.warn"],
+        passes: 2,
+      },
+      mangle: { toplevel: true },
+      format: { comments: false },
+    },
 
     // Inline assets smaller than 4 kb as base64 to save round-trips
     assetsInlineLimit: 4096,
@@ -16,6 +26,9 @@ export default defineConfig({
 
     // Tighter source maps for production (none = smallest)
     sourcemap: false,
+
+    // Enable CSS code splitting
+    cssCodeSplit: true,
 
     rollupOptions: {
       output: {
@@ -27,6 +40,11 @@ export default defineConfig({
         chunkFileNames: "assets/[name]-[hash].js",
         entryFileNames: "assets/[name]-[hash].js",
         assetFileNames: "assets/[name]-[hash][extname]",
+      },
+      // Tree-shake anything unused
+      treeshake: {
+        moduleSideEffects: false,
+        propertyReadSideEffects: false,
       },
     },
 
