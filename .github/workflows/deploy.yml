@@ -1,65 +1,57 @@
-name: Build and Deploy Vite App to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published] # triggers when you publish a release in GitHub
+  workflow_dispatch:   # fallback: manual trigger from the Actions tab
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# Only allow one deployment at a time; cancel in-flight runs on new push
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js environment
-      - name: Setup Node.js
+      - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: 'npm'
+          node-version: 24
+          cache: npm
 
-      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # Step 4: Build the project
-      - name: Build the project
+      - name: Refresh Umami script
+        run: curl -s https://cloud.umami.is/script.js -o public/umami.js
+
+      - name: Build
         run: npm run build
 
-      # Step 5: Check dist folder size
-      - name: Check dist folder size
-        run: du -sh dist
-
-      # Step 6: Upload the built folder as an artifact
-      - name: Upload artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          name: github-pages  # GitHub Pages expects this artifact name
-          path: dist
+          path: ./dist
 
   deploy:
-    runs-on: ubuntu-latest
+    name: Deploy
     needs: build
-
-    permissions:
-      pages: write
-      id-token: write
-
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # Step 1: Download artifact
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: github-pages
-          path: dist
-
-      # Step 2: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
+
