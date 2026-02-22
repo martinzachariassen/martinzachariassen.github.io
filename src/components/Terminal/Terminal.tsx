@@ -73,6 +73,7 @@ export default function Terminal() {
   const outRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const dotsProgressRef = useRef(0);
+  const bannerShownRef = useRef(false);
 
   const reducedMotion = useMemo(
     () => window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false,
@@ -107,6 +108,8 @@ export default function Terminal() {
   // ── Initial banner ──────────────────────────────────────────────────────
 
   useEffect(() => {
+    if (bannerShownRef.current) return;
+    bannerShownRef.current = true;
     dispatch({
       type: "append",
       lines: [
@@ -207,7 +210,7 @@ export default function Terminal() {
   const runCommand = useCallback((raw: string) => {
     const { cmd, args } = parseCommand(raw);
 
-    dispatch({ type: "append", lines: [{ text: `mlz@oslo:~$ ${raw}`, tone: "dim" }] });
+    dispatch({ type: "append", lines: [{ text: `guest@mlz:~$ ${raw}`, tone: "dim" }] });
 
     if (cmd === "clear") { dispatch({ type: "clear" }); return; }
     if (!cmd) return;
@@ -346,9 +349,9 @@ export default function Terminal() {
 
         <div className="promptRow">
           <div className="prompt" aria-hidden="true">
-            <span className="p-user">mlz</span>
+            <span className="p-user">guest</span>
             <span className="p-at">@</span>
-            <span className="p-host">oslo</span>
+            <span className="p-host">mlz</span>
             <span className="p-colon">:</span>
             <span className="p-path">~</span>
             <span className="p-sym">$</span>
