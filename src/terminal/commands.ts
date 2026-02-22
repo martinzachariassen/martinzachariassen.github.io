@@ -1,5 +1,4 @@
 import { normalizeInput } from "./parseCommand.js";
-import { pickDeterministic } from "./text.js";
 
 export interface OutputLine {
   text: string;
@@ -55,9 +54,7 @@ export function createCommandRegistry(): CommandRegistry {
     const secret = [
       "",
       "Secret-ish stuff:",
-      "  8ball <q>   - ask the terminal",
       "  matrix      - a short rain of characters",
-      "  fortune     - a tiny fortune",
       "  secrets off - disable easter eggs",
       "  secrets on  - enable easter eggs",
       "",
@@ -145,48 +142,6 @@ export function createCommandRegistry(): CommandRegistry {
     ]),
   }));
 
-  handlers.set("fortune", () => {
-    const fortunes = [
-      "Fortune: Your next refactor will be small and satisfying.",
-      "Fortune: The bug is in the assumptions.",
-      "Fortune: Green tests, calm mind.",
-      "Fortune: Make state explicit; future you will smile.",
-      "Fortune: Delete code. (After you write the test.)",
-      "Fortune: Ship it. Then observe it.",
-    ];
-    return { lines: [{ text: fortunes[Math.floor(Math.random() * fortunes.length)] }] };
-  });
-
-  handlers.set("8ball", (args: string[] = []) => {
-    const q = args.join(" ").trim();
-    if (!q) return { lines: [{ text: "Usage: 8ball <your question>" }] };
-
-    const answers = [
-      "It is certain.",
-      "It is decidedly so.",
-      "Without a doubt.",
-      "Yes — definitely.",
-      "You may rely on it.",
-      "As I see it, yes.",
-      "Most likely.",
-      "Outlook good.",
-      "Yes.",
-      "Signs point to yes.",
-      "Reply hazy, try again.",
-      "Ask again later.",
-      "Better not tell you now.",
-      "Cannot predict now.",
-      "Concentrate and ask again.",
-      "Don't count on it.",
-      "My reply is no.",
-      "My sources say no.",
-      "Outlook not so good.",
-      "Very doubtful.",
-    ];
-
-    const a = pickDeterministic(answers, `8ball:${q}`);
-    return { lines: [{ text: `Q: ${q}` }, { text: `A: ${a}` }] };
-  });
 
   handlers.set("matrix", (args: string[] = []) => {
     const v = args[0]?.toLowerCase();
