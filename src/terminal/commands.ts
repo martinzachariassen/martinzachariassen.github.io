@@ -40,7 +40,8 @@ export function createCommandRegistry(): CommandRegistry {
       "  help        - show this list",
       "  whoami      - who is this?",
       "  about       - who I am",
-      "  skills      - areas of focus & interests",
+      "  focus       - professional focus areas",
+      "  tech        - tools & technologies",
       "  experience  - work history",
       "  contact     - how to reach me",
       "  links       - GitHub / LinkedIn / etc",
@@ -94,7 +95,8 @@ export function createCommandRegistry(): CommandRegistry {
           { text: "── ~/ ────────────────────────────────────", tone: "section" },
           { text: "" },
           { text: "drwxr-xr-x  guest  staff   about/",      tone: "indent" },
-          { text: "drwxr-xr-x  guest  staff   skills/",     tone: "indent" },
+          { text: "drwxr-xr-x  guest  staff   focus/",      tone: "indent" },
+          { text: "drwxr-xr-x  guest  staff   tech/",       tone: "indent" },
           { text: "drwxr-xr-x  guest  staff   experience/", tone: "indent" },
           { text: "drwxr-xr-x  guest  staff   contact/",    tone: "indent" },
           { text: "drwxr-xr-x  guest  staff   links/",      tone: "indent" },
@@ -109,8 +111,9 @@ export function createCommandRegistry(): CommandRegistry {
       lines: [
         { text: "── ~/", tone: "section" },
         { text: "" },
-        { text: "about/       skills/       experience/", tone: "indent" },
-        { text: "contact/     links/        secrets/",    tone: "indent" },
+        { text: "about/       focus/        tech/",       tone: "indent" },
+        { text: "experience/  contact/      links/",      tone: "indent" },
+        { text: "secrets/",                               tone: "indent" },
         { text: "" },
         { text: "(hint: they're commands, not folders)", tone: "indent dim" },
       ],
@@ -125,46 +128,249 @@ export function createCommandRegistry(): CommandRegistry {
     lines: [
       { text: "── About ─────────────────────────────────", tone: "section" },
       { text: "" },
-      { text: "Back-end developer, 9 years of experience." },
-      { text: "Architecture, integrations, production services." },
-      { text: " ", tone: "br" },
-      { text: "I build and maintain APIs and event-/" },
-      { text: "queue-based workflows — stream and batch." },
-      { text: "Robust contracts, idempotency, traceability." },
-      { text: " ", tone: "br" },
-      { text: "End-to-end ownership from design to prod." },
-      { text: "CI/CD, Kubernetes, micro-services in prod," },
-      { text: "with focus on operability & observability." },
-      { text: " ", tone: "br" },
-      { text: "Agile teams, clear communication," },
-      { text: "continuous learning, shared goals." },
+      { text: "Back-end developer  ·  9 years of experience", tone: "accent" },
       { text: "" },
-      { text: "→ Type 'skills' to see focus areas.", tone: "dim" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "What I do", tone: "accent" },
+        ],
+      },
+      { text: "  Architecture, integrations, and production", tone: "indent" },
+      { text: "  services with high stability requirements.", tone: "indent" },
+      { text: "" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "How I work", tone: "accent" },
+        ],
+      },
+      { text: "  APIs and integrations — event-driven and", tone: "indent" },
+      { text: "  scheduled batch jobs. Versioned contracts,", tone: "indent" },
+      { text: "  predictable error handling, traceability.", tone: "indent" },
+      { text: "" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "End-to-end ownership", tone: "accent" },
+        ],
+      },
+      { text: "  Design → scoping → implementation →", tone: "indent" },
+      { text: "  rollout → ops. Micro-services in prod", tone: "indent" },
+      { text: "  with logging, metrics, and alerting.", tone: "indent" },
+      { text: "" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "Teams", tone: "accent" },
+        ],
+      },
+      { text: "  Agile, clear communication,", tone: "indent" },
+      { text: "  continuous learning, shared goals.", tone: "indent" },
+      { text: "" },
+      { text: "→ Type 'focus' to see focus areas.", tone: "dim" },
     ],
   }));
 
-  handlers.set("skills", () => ({
+  handlers.set("focus", () => ({
     lines: [
-      { text: "── Skills & Interests ────────────────────", tone: "section" },
+      { text: "── Areas of Focus ────────────────────────", tone: "section" },
       { text: "" },
-      { text: "Observability / SRE", tone: "accent indent" },
-      { text: "Metrics, tracing, alerts, SLI/SLO.", tone: "indent" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "Observability / SRE", tone: "accent" },
+        ],
+      },
+      { text: "  Monitoring and alerting for stable ops and", tone: "indent" },
+      { text: "  fast debugging. Working systematically", tone: "indent" },
+      { text: "  towards SLIs and SLOs over time.", tone: "indent" },
       { text: "" },
-      { text: "Performance & Scaling", tone: "accent indent" },
-      { text: "Profiling, load tests, caching,", tone: "indent" },
-      { text: "indexing, queue/batch strategies.", tone: "indent" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "Performance & Scaling", tone: "accent" },
+        ],
+      },
+      { text: "  Measuring and improving performance by", tone: "indent" },
+      { text: "  finding and removing bottlenecks in APIs,", tone: "indent" },
+      { text: "  databases, and integrations.", tone: "indent" },
       { text: "" },
-      { text: "Event-Driven Integration", tone: "accent indent" },
-      { text: "Robust contracts, idempotency,", tone: "indent" },
-      { text: "retries, DLQ, traceability.", tone: "indent" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "Event-Driven Integration & Contracts", tone: "accent" },
+        ],
+      },
+      { text: "  Stable, versioned interfaces — tolerant of", tone: "indent" },
+      { text: "  failures and retries without double-processing,", tone: "indent" },
+      { text: "  and fully traceable in production.", tone: "indent" },
       { text: "" },
-      { text: "Data Modelling & System Design", tone: "accent indent" },
-      { text: "Clear concepts, clean interfaces,", tone: "indent" },
-      { text: "stable API contracts.", tone: "indent" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "Automation / Developer Workflow", tone: "accent" },
+        ],
+      },
+      { text: "  Automating build, test, and deploy.", tone: "indent" },
+      { text: "  Standardising workflows to cut manual steps.", tone: "indent" },
       { text: "" },
-      { text: "Automation / Dev Productivity", tone: "accent indent" },
-      { text: "Build, test, deploy automation.", tone: "indent" },
-      { text: "Tools and scripts to reduce friction.", tone: "indent" },
+    ],
+  }));
+
+  handlers.set("tech", () => ({
+    lines: [
+      { text: "── Tech & Tools ──────────────────────────", tone: "section" },
+      { text: "" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "Backend & Build", tone: "accent" },
+        ],
+      },
+      {
+        text: "",
+        parts: [
+          { text: "  Spring Boot", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "Ktor", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "OpenAPI", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "Maven", tone: "ok" },
+        ],
+      },
+      { text: "" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "Database", tone: "accent" },
+        ],
+      },
+      {
+        text: "",
+        parts: [
+          { text: "  PostgreSQL", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "Flyway", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "Redis", tone: "ok" },
+        ],
+      },
+      { text: "" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "Data & Messaging", tone: "accent" },
+        ],
+      },
+      {
+        text: "",
+        parts: [
+          { text: "  Kafka", tone: "ok" },
+        ],
+      },
+      { text: "" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "Testing", tone: "accent" },
+        ],
+      },
+      {
+        text: "",
+        parts: [
+          { text: "  JUnit", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "WireMock", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "Testcontainers", tone: "ok" },
+        ],
+      },
+      { text: "" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "Platform & Delivery", tone: "accent" },
+        ],
+      },
+      {
+        text: "",
+        parts: [
+          { text: "  Docker", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "Kubernetes", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "GitHub Actions", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "Helm", tone: "ok" },
+        ],
+      },
+      { text: "" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "Observability", tone: "accent" },
+        ],
+      },
+      {
+        text: "",
+        parts: [
+          { text: "  Datadog", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "Grafana", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "Prometheus", tone: "ok" },
+        ],
+      },
+      { text: "" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "Security", tone: "accent" },
+        ],
+      },
+      {
+        text: "",
+        parts: [
+          { text: "  OAuth2/OIDC", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "JWT", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "Spring Security", tone: "ok" },
+        ],
+      },
+      { text: "" },
+      {
+        text: "",
+        parts: [
+          { text: "▸ ", tone: "cyan" },
+          { text: "Tooling", tone: "accent" },
+        ],
+      },
+      {
+        text: "",
+        parts: [
+          { text: "  Jira", tone: "ok" },
+          { text: "  ·  ", tone: "dim" },
+          { text: "Confluence", tone: "ok" },
+        ],
+      },
       { text: "" },
     ],
   }));
@@ -202,7 +408,7 @@ export function createCommandRegistry(): CommandRegistry {
       { text: "Full Stack Developer", tone: "accent indent" },
       { text: "M7Dev · 12/2016–11/2017 · Bergen", tone: "indent" },
       { text: "" },
-      { text: "→ 9 yrs · Type 'skills' for focus areas.", tone: "dim" },
+      { text: "→ 9 yrs · Type 'focus' for focus areas.", tone: "dim" },
     ],
   }));
 
@@ -212,19 +418,6 @@ export function createCommandRegistry(): CommandRegistry {
       { text: "" },
       { text: "Email     zachariassen@hey.com", tone: "indent" },
       { text: "Location  Norway", tone: "indent" },
-      { text: "" },
-    ],
-  }));
-
-  handlers.set("links", () => ({
-    lines: [
-      { text: "── Links ─────────────────────────────────", tone: "section" },
-      { text: "" },
-      { text: "GitHub    → https://github.com/martinzachariassen",           tone: "indent" },
-      { text: "LinkedIn  → https://www.linkedin.com/in/martinzachariassen", tone: "indent" },
-      { text: "Homepage  → https://mlz.no",                                  tone: "indent" },
-      { text: "" },
-      { text: "(links are clickable)", tone: "indent dim" },
       { text: "" },
     ],
   }));
