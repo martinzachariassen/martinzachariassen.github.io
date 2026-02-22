@@ -1,3 +1,6 @@
+// Legacy vanilla implementation kept for reference.
+// The app now mounts from src/main.jsx (React).
+
 import "./style.css";
 
 const EASTER = {

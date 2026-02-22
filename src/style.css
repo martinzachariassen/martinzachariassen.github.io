@@ -55,6 +55,13 @@ body {
   background: rgba(192, 202, 245, 0.18);
 }
 
+/* React version uses real <button> elements for accessibility */
+button.dot {
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
 /* macOS/Warp-style traffic lights */
 .titlebar .dot {
   position: relative;
