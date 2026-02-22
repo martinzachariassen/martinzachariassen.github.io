@@ -18,6 +18,11 @@ dist-ssr/
 build/
 out/
 
+# ------------------------------
+# Generated / fetched at build time
+# ------------------------------
+public/umami.js
+
 # Vite / bundler caches
 .vite/
 .esbuild/

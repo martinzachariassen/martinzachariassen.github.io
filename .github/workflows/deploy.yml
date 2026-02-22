@@ -32,6 +32,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Refresh Umami script
+        run: curl -s https://cloud.umami.is/script.js -o public/umami.js
+
       - name: Build
         run: npm run build
 
