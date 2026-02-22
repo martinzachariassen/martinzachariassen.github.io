@@ -2,15 +2,14 @@ name: Deploy to GitHub Pages
 
 on:
   release:
-    types: [published]  # publish a release in GitHub UI → deploys
-  workflow_dispatch:    # manual trigger from the Actions tab
+    types: [published]
+  workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Only allow one deployment at a time; cancel in-flight runs on new push
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -20,10 +19,11 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout main
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # needed for git describe --tags
+          ref: main          # always build from main, regardless of tag ref
+          fetch-depth: 0     # needed for git describe --tags
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
@@ -36,17 +36,14 @@ jobs:
 
       - name: Set version from tag
         run: |
-          REF="${{ github.ref }}"
-          REF_NAME="${{ github.ref_name }}"
-
-          if [[ "$REF" == refs/tags/* ]]; then
-            # Triggered by a tag push or release — use the tag name directly
-            VERSION="$REF_NAME"
+          # For a release event the tag name is in github.event.release.tag_name
+          # For manual dispatch fall back to latest tag or short SHA
+          TAG="${{ github.event.release.tag_name }}"
+          if [[ -n "$TAG" ]]; then
+            VERSION="$TAG"
           else
-            # Manual dispatch — look for the latest tag on this commit
             VERSION=$(git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD)
           fi
-
           echo "VITE_APP_VERSION=$VERSION" >> $GITHUB_ENV
           echo "Building version: $VERSION"
 
@@ -72,4 +69,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
