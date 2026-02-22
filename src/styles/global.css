@@ -90,12 +90,19 @@ a:hover { text-decoration: underline; }
 
 /* ─── Mobile ─────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
-  :root { --terminal-h: calc(100dvh - 0px); }
+  :root {
+    --terminal-h: 100dvh;
+    font-size: 14px;
+  }
 
-  /* Prevent body from scrolling behind the terminal */
   html, body {
-    height: 100dvh;
+    height: 100%;
     overflow: hidden;
+  }
+
+  /* Skip expensive gradient on mobile — saves paint + battery */
+  body {
+    background: var(--bg);
   }
 }
 

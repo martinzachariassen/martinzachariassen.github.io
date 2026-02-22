@@ -82,7 +82,8 @@ export default function Terminal() {
   const [inputValue, setInputValue] = useState("");
   const historyRef = useRef<{ list: string[]; idx: number }>({ list: [], idx: 0 });
 
-  const screenRef = useRef<HTMLDivElement>(null);
+  const terminalRef = useRef<HTMLDivElement>(null);
+  const scrollScheduled = useRef(false);
   const outRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const dotsProgressRef = useRef(0);
@@ -109,13 +110,27 @@ export default function Terminal() {
 
   const syncViewport = useCallback(() => {
     const vv = window.visualViewport;
-    if (!vv) {
-      document.documentElement.style.setProperty("--kbd", "0px");
-      return;
+    const isMobile = window.innerWidth <= 640;
+
+    if (isMobile && terminalRef.current) {
+      const h = vv ? Math.round(vv.height) : window.innerHeight;
+      terminalRef.current.style.height = `${h}px`;
+    } else if (!isMobile) {
+      const kbd = vv
+        ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop)
+        : 0;
+      document.documentElement.style.setProperty("--kbd", `${Math.round(kbd)}px`);
     }
-    const kbd = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-    document.documentElement.style.setProperty("--kbd", `${Math.round(kbd)}px`);
-    scrollToBottom();
+
+    // Defer scroll until after the 120 ms CSS transition on .terminal height
+    // so we don't scroll to a stale position mid-animation.
+    if (!scrollScheduled.current) {
+      scrollScheduled.current = true;
+      setTimeout(() => {
+        scrollScheduled.current = false;
+        scrollToBottom();
+      }, 130);
+    }
   }, [scrollToBottom]);
 
   // ── Initial banner ──────────────────────────────────────────────────────
@@ -130,21 +145,32 @@ export default function Terminal() {
       day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit",
     });
 
+    const isMobile = window.innerWidth <= 640;
+
     // Boot sequence: [delay in ms, text, tone?]
-    const sequence: [number, string, string?][] = [
-      [0,    `mlz.no  ${__APP_VERSION__}`,              "accent"],
-      [120,  ""],
-      [240,  "  booting system...",                  "dim"   ],
-      [520,  "  loading profile............  done",  "dim"   ],
-      [820,  "  mounting filesystem............  ok","dim"   ],
-      [1020, "  starting shell.................  ok","dim"   ],
-      [1200, ""],
-      [1320, `  ${timestamp}`,                       "dim"   ],
-      [1420, "  guest@mlz - welcome back.",          "ok"    ],
-      [1560, ""],
-      [1660, "  Type 'help' to see available commands.", "dim"],
-      [1760, ""],
-    ];
+    // On mobile: run instantly and show a shorter message to save space
+    const sequence: [number, string, string?][] = isMobile
+      ? [
+          [0, `mlz.no  ${__APP_VERSION__}`, "accent"],
+          [0, ""],
+          [0, "  guest@mlz — welcome.", "ok"],
+          [0, "  Type 'help' to get started.", "dim"],
+          [0, ""],
+        ]
+      : [
+          [0,    `mlz.no  ${__APP_VERSION__}`,              "accent"],
+          [120,  ""],
+          [240,  "  booting system...",                  "dim"   ],
+          [520,  "  loading profile............  done",  "dim"   ],
+          [820,  "  mounting filesystem............  ok","dim"   ],
+          [1020, "  starting shell.................  ok","dim"   ],
+          [1200, ""],
+          [1320, `  ${timestamp}`,                       "dim"   ],
+          [1420, "  guest@mlz - welcome back.",          "ok"    ],
+          [1560, ""],
+          [1660, "  Type 'help' to see available commands.", "dim"],
+          [1760, ""],
+        ];
 
     sequence.forEach(([delay, text, tone]) => {
       const ms = reducedMotion ? 0 : delay;
@@ -160,17 +186,32 @@ export default function Terminal() {
   useEffect(() => { scrollToBottom(); }, [scrollToBottom, state.lines.length]);
 
   useEffect(() => {
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", syncViewport);
-      window.visualViewport.addEventListener("scroll", syncViewport);
-    }
-    window.addEventListener("orientationchange", syncViewport);
-    return () => {
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener("resize", syncViewport);
-        window.visualViewport.removeEventListener("scroll", syncViewport);
+    const vv = window.visualViewport;
+
+    const onOrientationChange = () => {
+      // Reset height immediately to full window so the transition starts
+      // from the right place after rotation.
+      if (terminalRef.current && window.innerWidth <= 640) {
+        terminalRef.current.style.height = `${window.innerHeight}px`;
       }
-      window.removeEventListener("orientationchange", syncViewport);
+      setTimeout(syncViewport, 100);
+    };
+
+    if (vv) {
+      vv.addEventListener("resize", syncViewport);
+      vv.addEventListener("scroll", syncViewport);
+    }
+    window.addEventListener("orientationchange", onOrientationChange);
+
+    // Run once on mount to set the initial height correctly
+    syncViewport();
+
+    return () => {
+      if (vv) {
+        vv.removeEventListener("resize", syncViewport);
+        vv.removeEventListener("scroll", syncViewport);
+      }
+      window.removeEventListener("orientationchange", onOrientationChange);
     };
   }, [syncViewport]);
 
@@ -363,9 +404,21 @@ export default function Terminal() {
     if (e.key === "ArrowDown") { e.preventDefault(); historyNext(); }
   }, [historyNext, historyPrev, onSubmit]);
 
+  const pointerMoved = useRef(false);
+
   const onScreenPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (e.target instanceof HTMLElement && e.target.closest("a,button,input")) return;
-    focusCmd();
+    pointerMoved.current = false;
+  }, []);
+
+  const onScreenPointerMove = useCallback(() => {
+    pointerMoved.current = true;
+  }, []);
+
+  const onScreenPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.target instanceof HTMLElement && e.target.closest("a,button,input")) return;
+    // Only focus (and open keyboard) if the finger didn't scroll
+    if (!pointerMoved.current) focusCmd();
   }, [focusCmd]);
 
   const onDotActivate = useCallback((index: number) => {
@@ -388,12 +441,17 @@ export default function Terminal() {
 
   // ── Render ───────────────────────────────────────────────────────────────
 
+  // Only apply the drag-resize height on desktop; on mobile syncViewport
+  // sets the height directly on terminalRef so we must not override it here.
+  const isMobileViewport = window.innerWidth <= 640;
+
   return (
     <div className="terminal-wrapper">
       <div
+        ref={terminalRef}
         className="terminal"
         aria-label="Terminal style homepage"
-        style={{ height: `${height}px` }}
+        style={isMobileViewport ? undefined : { height: `${height}px` }}
       >
       <div className="titlebar">
         <div className="dots" role="group" aria-label="Window controls">
@@ -412,10 +470,11 @@ export default function Terminal() {
 
       <div
         id="screen"
-        ref={screenRef}
         className="screen"
         tabIndex={0}
         onPointerDown={onScreenPointerDown}
+        onPointerMove={onScreenPointerMove}
+        onPointerUp={onScreenPointerUp}
       >
         <div
           id="out"
@@ -439,14 +498,20 @@ export default function Terminal() {
         <div className="promptRow">
           <label htmlFor="cmd" className="sr-only">Enter a command</label>
           <div className="prompt" aria-hidden="true">
-            <span className={state.hacked ? "p-user hacked" : "p-user"}>
-              {state.hacked ? "agent" : "guest"}
-            </span>
-            <span className="p-at">@</span>
-            <span className="p-host">mlz</span>
-            <span className="p-colon">:</span>
-            <span className="p-path">~</span>
-            <span className="p-sym">$</span>
+            {isMobileViewport ? (
+              <span className={state.hacked ? "p-sym hacked" : "p-sym"}>$</span>
+            ) : (
+              <>
+                <span className={state.hacked ? "p-user hacked" : "p-user"}>
+                  {state.hacked ? "agent" : "guest"}
+                </span>
+                <span className="p-at">@</span>
+                <span className="p-host">mlz</span>
+                <span className="p-colon">:</span>
+                <span className="p-path">~</span>
+                <span className="p-sym">$</span>
+              </>
+            )}
           </div>
           <input
             id="cmd"
@@ -458,7 +523,7 @@ export default function Terminal() {
             autoCorrect="off"
             inputMode="text"
             enterKeyHint="send"
-            autoFocus
+            autoFocus={!isMobileViewport}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={onKeyDown}

@@ -16,7 +16,6 @@
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 16px 60px rgba(0, 0, 0, 0.35);
-  contain: layout paint;
   display: flex;
   flex-direction: column;
 }
@@ -28,7 +27,9 @@
     border-left: none;
     border-right: none;
     box-shadow: none;
-    height: 100dvh !important; /* override inline style on mobile */
+    /* JS (syncViewport) sets this to visualViewport.height on every resize */
+    /* transition smooths keyboard open/close so nothing jumps */
+    transition: height 120ms ease-out;
   }
 }
 
@@ -98,8 +99,8 @@
 
 @media (max-width: 640px) {
   .titlebar {
-    padding: 14px 16px;
-    padding-top: calc(14px + env(safe-area-inset-top));
+    padding: calc(10px + env(safe-area-inset-top)) 12px 10px;
+    gap: 8px;
   }
 }
 
@@ -107,6 +108,13 @@
   margin-left: 6px;
   font-size: 13px;
   color: var(--dim);
+}
+
+@media (max-width: 640px) {
+  .title {
+    font-size: 12px;
+    margin-left: 2px;
+  }
 }
 
 /* ─── Traffic-light dots ─────────────────────────────────────────────────── */
@@ -175,9 +183,10 @@ button.dot {
 @media (max-width: 640px) {
   .screen {
     flex: 1 1 auto;
+    min-height: 0;
     height: auto;
-    padding: 14px 16px calc(16px + var(--kbd) + env(safe-area-inset-bottom)) 16px;
-    gap: 12px;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom)) 12px;
+    gap: 8px;
   }
 }
 
@@ -190,6 +199,8 @@ button.dot {
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  /* Explicit pan-y so the browser doesn't steal vertical swipes */
+  touch-action: pan-y;
   padding-right: 6px;
   word-break: break-word;
   overflow-wrap: break-word;
@@ -220,8 +231,8 @@ button.dot {
 
 @media (max-width: 640px) {
   .output {
-    font-size: 15px;
-    line-height: 1.65;
+    font-size: 13px;
+    line-height: 1.55;
     padding-right: 0;
     /* Hide scrollbar on touch — finger-scrolled */
     scrollbar-width: none;
@@ -242,8 +253,8 @@ button.dot {
 
 @media (max-width: 640px) {
   .promptRow {
-    gap: 8px;
-    padding-top: 12px;
+    gap: 6px;
+    padding-top: 8px;
     align-items: center;
   }
 }
@@ -262,6 +273,14 @@ button.dot {
 .p-path   { color: var(--magenta); }
 .p-sym    { color: var(--accent);  font-weight: 700; padding-left: 2px; }
 
+/* Short $ prompt on mobile — keep it tight */
+@media (max-width: 640px) {
+  .p-sym {
+    padding-left: 0;
+    font-size: 15px;
+  }
+}
+
 /* ─── Command input ──────────────────────────────────────────────────────── */
 #cmd {
   flex: 1;
@@ -277,8 +296,8 @@ button.dot {
 @media (max-width: 640px) {
   #cmd {
     font-size: 16px; /* Prevents iOS auto-zoom on focus */
-    min-height: 44px;
-    padding: 10px 0;
+    min-height: 40px;
+    padding: 6px 0;
   }
 }
 
@@ -291,5 +310,5 @@ button.dot {
 }
 
 @media (max-width: 640px) {
-  .hint { font-size: 13px; }
+  .hint { display: none; }
 }
