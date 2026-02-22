@@ -79,7 +79,14 @@
   .resize-hint { display: none; }
 }
 
-/* ─── Title bar ──────────────────────────────────────────────────────────── */
+.dot:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Screen div is focusable for keyboard users but doesn't need a ring */
+.screen:focus { outline: none; }
+.screen:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .titlebar {
   display: flex;
   align-items: center;

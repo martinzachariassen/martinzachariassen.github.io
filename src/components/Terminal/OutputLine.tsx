@@ -35,11 +35,23 @@ export default function OutputLine({ line }: Props) {
     return (
       <div className={`line ${line.tone ?? ""}`.trim()}>
         <span style={{ whiteSpace: "pre" }}>{labelled.prefix}</span>
-        <a href={labelled.url} target="_blank" rel="noreferrer noopener">
+        <a
+          href={labelled.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={`Open ${labelled.label} (opens in new tab)`}
+        >
           {labelled.label}
         </a>
         <span className="link-arrow"> → </span>
-        <a href={labelled.url} target="_blank" rel="noreferrer noopener" className="link-url">
+        <a
+          href={labelled.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="link-url"
+          aria-hidden="true"
+          tabIndex={-1}
+        >
           {labelled.url}
         </a>
       </div>
@@ -53,7 +65,13 @@ export default function OutputLine({ line }: Props) {
       {parts.map((p, idx) => {
         if (p.type === "link") {
           return (
-            <a key={idx} href={p.value} target="_blank" rel="noreferrer noopener">
+            <a
+              key={idx}
+              href={p.value}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={`Open ${p.value} (opens in new tab)`}
+            >
               {p.value}
             </a>
           );

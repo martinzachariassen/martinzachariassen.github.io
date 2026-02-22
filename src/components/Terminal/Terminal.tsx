@@ -397,12 +397,12 @@ export default function Terminal() {
       >
       <div className="titlebar">
         <div className="dots" role="group" aria-label="Window controls">
-          {([0, 1, 2] as const).map((i) => (
+          {(["Close", "Minimise", "Maximise"] as const).map((label, i) => (
             <button
               key={i}
               type="button"
               className="dot"
-              aria-label={`Dot ${i + 1}`}
+              aria-label={label}
               onClick={() => onDotActivate(i)}
             />
           ))}
@@ -422,6 +422,7 @@ export default function Terminal() {
           ref={outRef}
           className={`output${state.glitch ? " glitch" : ""}`}
           role="log"
+          aria-label="Terminal output"
           aria-live="polite"
         >
           {state.lines.map((l) => (
@@ -436,6 +437,7 @@ export default function Terminal() {
         />
 
         <div className="promptRow">
+          <label htmlFor="cmd" className="sr-only">Enter a command</label>
           <div className="prompt" aria-hidden="true">
             <span className={state.hacked ? "p-user hacked" : "p-user"}>
               {state.hacked ? "agent" : "guest"}
