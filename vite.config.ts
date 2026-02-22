@@ -4,6 +4,11 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
 
+  define: {
+    // Injected by CI from the git tag; falls back to "dev" locally
+    __APP_VERSION__: JSON.stringify(process.env.VITE_APP_VERSION ?? "dev"),
+  },
+
   build: {
     // Use terser for minification with aggressive compression and dead-code drops
     minify: "terser",

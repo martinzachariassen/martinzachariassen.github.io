@@ -34,10 +34,7 @@
 .link-arrow { color: var(--dim); }
 .link-url   { color: var(--dim); font-size: 0.88em; }
 
-/* ─── ASCII welcome header — hidden on small screens ────────────────────── */
 @media (max-width: 640px) {
-  .line.ascii-header { display: none; }
-
   /* Truncate long URLs on mobile rather than wrapping */
   .link-url {
     display: inline-block;
@@ -49,3 +46,4 @@
   }
 }
 
+/* ─── Glitch effect ──────────────────────────────────────────────────────── */

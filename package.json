@@ -8,16 +8,13 @@
     "build": "tsc -p tsconfig.json && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json",
-    "generate-headers": "node scripts/generate-headers.mjs",
     "generate-favicons": "node scripts/generate-favicons.mjs"
   },
   "devDependencies": {
-    "@rollup/plugin-terser": "^0.4.4",
-    "@types/figlet": "^1.7.0",
+    "@types/node": "^25.3.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.7.0",
-    "figlet": "^1.10.0",
     "sharp": "^0.34.5",
     "typescript": "^5.9.3",
     "vite": "^7.2.4"
