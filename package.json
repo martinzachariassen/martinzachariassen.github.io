@@ -8,7 +8,8 @@
     "build": "tsc -p tsconfig.json && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json",
-    "generate-headers": "node scripts/generate-headers.mjs"
+    "generate-headers": "node scripts/generate-headers.mjs",
+    "generate-favicons": "node scripts/generate-favicons.mjs"
   },
   "devDependencies": {
     "@types/figlet": "^1.7.0",
@@ -16,6 +17,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.7.0",
     "figlet": "^1.10.0",
+    "sharp": "^0.34.5",
     "typescript": "^5.9.3",
     "vite": "^7.2.4"
   },
