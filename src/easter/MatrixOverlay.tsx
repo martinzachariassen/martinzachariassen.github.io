@@ -16,7 +16,7 @@ export default function MatrixOverlay({
 }: MatrixOverlayProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef = useRef<number | null>(null);
   const resizeHandlerRef = useRef<(() => void) | null>(null);
 
   const reducedMotion = useMemo(

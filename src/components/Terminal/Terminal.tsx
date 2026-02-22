@@ -118,17 +118,38 @@ export default function Terminal() {
   useEffect(() => {
     if (bannerShownRef.current) return;
     bannerShownRef.current = true;
-    dispatch({
-      type: "append",
-      lines: [
-        { text: "Type 'help' to see commands.", tone: "dim" },
-        { text: "" },
-        { text: "about  |  experience  |  skills  |  links  |  contact", tone: "dim" },
-        { text: "" },
-      ],
+
+    const now = new Date();
+    const timestamp = now.toLocaleString("en-GB", {
+      weekday: "short", year: "numeric", month: "short",
+      day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit",
     });
-    syncViewport();
-    queueMicrotask(scrollToBottom);
+
+    // Boot sequence: [delay in ms, text, tone?]
+    const sequence: [number, string, string?][] = [
+      [0,    `mlz.no  ${__APP_VERSION__}`,              "accent"],
+      [120,  ""],
+      [240,  "  booting system...",                  "dim"   ],
+      [520,  "  loading profile............  done",  "dim"   ],
+      [820,  "  mounting filesystem............  ok","dim"   ],
+      [1020, "  starting shell.................  ok","dim"   ],
+      [1200, ""],
+      [1320, `  ${timestamp}`,                       "dim"   ],
+      [1420, "  guest@mlz - welcome back.",          "ok"    ],
+      [1560, ""],
+      [1660, "  Type 'help' to see available commands.", "dim"],
+      [1760, ""],
+    ];
+
+    sequence.forEach(([delay, text, tone]) => {
+      const ms = reducedMotion ? 0 : delay;
+      setTimeout(() => {
+        dispatch({ type: "append", lines: [{ text, tone }] });
+        queueMicrotask(scrollToBottom);
+      }, ms);
+    });
+
+    setTimeout(syncViewport, reducedMotion ? 0 : 2000);
   }, [scrollToBottom, syncViewport]);
 
   useEffect(() => { scrollToBottom(); }, [scrollToBottom, state.lines.length]);
