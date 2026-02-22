@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { WELCOME_HEADER } from "../../terminal/headers.js";
 import "./Terminal.css";
 import { createCommandRegistry } from "../../terminal/commands.js";
 import type { CommandEffect, CommandResult, OutputLine } from "../../terminal/commands.js";
@@ -113,10 +114,11 @@ export default function Terminal() {
     dispatch({
       type: "append",
       lines: [
-        { text: "Welcome.", tone: "dim" },
+        ...WELCOME_HEADER.split("\n").map((text) => ({ text, tone: "header" })),
+        { text: "" },
         { text: "Type 'help' to see commands.", tone: "dim" },
         { text: "" },
-        { text: "about  |  stack  |  projects  |  links  |  contact", tone: "dim" },
+        { text: "about  |  skills  |  links  |  contact", tone: "dim" },
         { text: "" },
       ],
     });
@@ -377,6 +379,7 @@ export default function Terminal() {
         <div className="hint">
           Try: <span className="accent">help</span>,{" "}
           <span className="accent">about</span>,{" "}
+          <span className="accent">skills</span>,{" "}
           <span className="accent">links</span>
         </div>
       </div>

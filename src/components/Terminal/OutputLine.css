@@ -9,6 +9,8 @@
 .info    { color: var(--cyan); }
 .ok      { color: var(--green); }
 .em      { color: var(--magenta); }
+.header  { color: var(--yellow); }
+.section { color: var(--cyan); }
 
 /* ─── Glitch effect (short-lived, toggled via React state) ───────────────── */
 .output.glitch .line {

@@ -37,17 +37,16 @@ export function createCommandRegistry(): CommandRegistry {
 
     const base = [
       "Available commands:",
-      "  help        - show commands",
+      "  help        - show this list",
       "  about       - who I am",
-      "  stack       - what I work with",
-      "  projects    - highlights",
+      "  skills      - areas of focus & interests",
       "  contact     - how to reach me",
-      "  links       - GitHub/LinkedIn/etc",
-      "  clear       - clear screen",
+      "  links       - GitHub / LinkedIn / etc",
+      "  clear       - clear the screen",
     ];
 
     if (!wantsSecret) {
-      base.push("", "Tip: help --secret");
+      base.push("", "Tip: try  help --secret");
       return { lines: linesFromStrings(base) };
     }
 
@@ -65,83 +64,82 @@ export function createCommandRegistry(): CommandRegistry {
   });
 
   handlers.set("about", () => ({
-    lines: linesFromStrings([
-      "Hi! I'm Martin - a driven developer and architect.",
-      "",
-      "I like building systems that actually work in practice.",
-      "Focus: scalability, robustness, and sustainable solutions over time.",
-      "",
-      "I thrive at the intersection of engineering, operations, and architecture -",
-      "from design to production debugging.",
-      "",
-      "Keywords: clear priorities, transparency, and continuous learning.",
-      "",
-      "Type 'stack' or 'projects'.",
-    ]),
+    lines: [
+      { text: "── About ─────────────────────────────────────────────", tone: "section" },
+      { text: "" },
+      { text: "Back-end developer with 9 years of experience, focused on" },
+      { text: "architecture, integrations and production-critical services." },
+      { text: "" },
+      { text: "I build and maintain APIs (internal and external) and event-/" },
+      { text: "queue-based workflows — both streaming and batch processing." },
+      { text: "I emphasise robust contracts, idempotency, error handling" },
+      { text: "and traceability." },
+      { text: "" },
+      { text: "I take end-to-end ownership of deliveries: from technical" },
+      { text: "design through implementation to operational follow-up." },
+      { text: "DevOps is part of the job — CI/CD, Kubernetes, and running" },
+      { text: "micro-services in production with a focus on operability" },
+      { text: "and observability." },
+      { text: "" },
+      { text: "I thrive in agile teams with clear communication, continuous" },
+      { text: "learning and shared goals, and I'm used to close collaboration" },
+      { text: "across disciplines and stakeholders." },
+      { text: "" },
+      { text: "→  Type 'skills' to see areas of focus.", tone: "dim" },
+    ],
   }));
 
-  handlers.set("stack", () => ({
-    lines: linesFromStrings([
-      "Strengths / focus areas:",
-      "  - System design: distributed solutions, integrations, domain systems",
-      "  - Ops & DevOps: secure + automated deployments, stability, reliability",
-      "  - Observability: logs, metrics, and insight in distributed applications",
-      "  - Async systems: messaging flows, error handling, resilient processing",
-      "  - Performance: optimizing process flow and memory usage",
-      "",
-      "Working style:",
-      "  - End-to-end ownership of technical direction (perf, security, stability)",
-      "  - Pragmatic: simplify where it matters, be explicit about boundaries",
-    ]),
+  handlers.set("skills", () => ({
+    lines: [
+      { text: "── Skills & Interests ────────────────────────────────", tone: "section" },
+      { text: "" },
+      { text: "  Observability / SRE", tone: "accent" },
+      { text: "  Building metrics, tracing and alerts for fast debugging." },
+      { text: "  Working towards systematic SLI/SLO practices." },
+      { text: "" },
+      { text: "  Performance & Scaling", tone: "accent" },
+      { text: "  Profiling CPU/memory/IO/latency, running load & soak tests," },
+      { text: "  and optimising bottlenecks via caching, indexing and" },
+      { text: "  queue/batch strategies." },
+      { text: "" },
+      { text: "  Event-Driven Integration & Contracts", tone: "accent" },
+      { text: "  Event-driven workflows with robust contracts (schema/" },
+      { text: "  versioning), designed for idempotency, retries, DLQ" },
+      { text: "  and end-to-end traceability." },
+      { text: "" },
+      { text: "  Data Modelling & System Design", tone: "accent" },
+      { text: "  Modelling data and integrations with clear concepts," },
+      { text: "  clean interfaces and stable API contracts that tolerate" },
+      { text: "  change and stay traceable in production." },
+      { text: "" },
+      { text: "  Automation / Developer Productivity", tone: "accent" },
+      { text: "  Automating build, test and deploy (local + CI), writing" },
+      { text: "  small tools/scripts and standardising workflows to reduce" },
+      { text: "  friction and increase delivery speed without losing quality." },
+      { text: "" },
+    ],
   }));
-
-  handlers.set("projects", (args: string[] = []) => {
-    if (args[0]?.toLowerCase() === "invoice") {
-      return {
-        lines: [
-          { text: "Invoice pipeline details:", tone: "accent" },
-          ...linesFromStrings([
-            "  - Ingest XML/PDF -> immutable blob storage",
-            "  - Reconcile PDFs to invoices",
-            "  - Validate + transform to standard formats",
-            "  - Dispatch with windows/caps + receipts tracking",
-          ]),
-        ],
-      };
-    }
-
-    return {
-      lines: linesFromStrings([
-        "Highlights (typical deliveries):",
-        "  - Integrations across domain systems and critical business flows",
-        "  - Secure, automated processes for deploy, operations, and monitoring",
-        "  - Robust error handling in asynchronous messaging systems",
-        "  - Performance improvements: flow, resource usage, memory management",
-        "  - Better observability for faster debugging and deeper insight",
-        "",
-        "Details: type 'projects invoice'.",
-      ]),
-    };
-  });
 
   handlers.set("contact", () => ({
-    lines: linesFromStrings([
-      "Contact:",
-      "  email: zachariassen@hey.com",
-      "  location: Norway",
-      "",
-    ]),
+    lines: [
+      { text: "── Contact ───────────────────────────────────────────", tone: "section" },
+      { text: "" },
+      { text: "  Email     zachariassen@hey.com" },
+      { text: "  Location  Norway" },
+      { text: "" },
+    ],
   }));
 
   handlers.set("links", () => ({
-    lines: linesFromStrings([
-      "Links:",
-      "  GitHub:   https://github.com/martinzachariassen",
-      "  LinkedIn: https://www.linkedin.com/in/martinzachariassen",
-      "  Homepage: https://mlz.no (this site)",
-    ]),
+    lines: [
+      { text: "── Links ─────────────────────────────────────────────", tone: "section" },
+      { text: "" },
+      { text: "  GitHub    https://github.com/martinzachariassen" },
+      { text: "  LinkedIn  https://www.linkedin.com/in/martinzachariassen" },
+      { text: "  Homepage  https://mlz.no" },
+      { text: "" },
+    ],
   }));
-
 
   handlers.set("matrix", (args: string[] = []) => {
     const v = args[0]?.toLowerCase();
@@ -176,4 +174,3 @@ export function createCommandRegistry(): CommandRegistry {
     normalizeInput,
   };
 }
-
