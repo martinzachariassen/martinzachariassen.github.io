@@ -247,7 +247,8 @@ button.dot {
   white-space: nowrap;
 }
 
-.p-user   { color: var(--green);   font-weight: 700; }
+.p-user         { color: var(--green); font-weight: 700; }
+.p-user.hacked  { color: var(--err);   font-weight: 700; }
 .p-at     { color: var(--dim); }
 .p-host   { color: var(--cyan);    font-weight: 700; }
 .p-colon  { color: var(--dim); }

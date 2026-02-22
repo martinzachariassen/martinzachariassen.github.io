@@ -20,6 +20,7 @@ interface TerminalState {
   easterEnabled: boolean;
   glitch: boolean;
   matrixRunning: boolean;
+  hacked: boolean;
 }
 
 type Action =
@@ -27,7 +28,8 @@ type Action =
   | { type: "clear" }
   | { type: "setEasterEnabled"; enabled: boolean }
   | { type: "setGlitch"; on: boolean }
-  | { type: "setMatrixRunning"; running: boolean };
+  | { type: "setMatrixRunning"; running: boolean }
+  | { type: "setHacked"; on: boolean };
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -57,6 +59,8 @@ function terminalReducer(state: TerminalState, action: Action): TerminalState {
       return { ...state, glitch: action.on };
     case "setMatrixRunning":
       return { ...state, matrixRunning: action.running };
+    case "setHacked":
+      return { ...state, hacked: action.on };
   }
 }
 
@@ -65,13 +69,14 @@ const INITIAL_STATE: TerminalState = {
   easterEnabled: true,
   glitch: false,
   matrixRunning: false,
+  hacked: false,
 };
 
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function Terminal() {
   const registry = useMemo(() => createCommandRegistry(), []);
-  const { height, onMouseDown: onResizeMouseDown } = useResize(480);
+  const { height, onMouseDown: onResizeMouseDown } = useResize(580);
 
   const [state, dispatch] = useReducer(terminalReducer, INITIAL_STATE);
   const [inputValue, setInputValue] = useState("");
@@ -238,17 +243,67 @@ export default function Terminal() {
   const runCommand = useCallback((raw: string) => {
     const { cmd, args } = parseCommand(raw);
 
-    dispatch({ type: "append", lines: [{ text: `guest@mlz:~$ ${raw}`, tone: "dim" }] });
+    const user = state.hacked ? "agent" : "guest";
+    dispatch({ type: "append", lines: [{ text: `${user}@mlz:~$ ${raw}`, tone: "dim" }] });
 
-    if (cmd === "clear") { dispatch({ type: "clear" }); return; }
+    if (cmd === "clear") {
+      dispatch({ type: "clear" });
+      dispatch({ type: "setHacked", on: false });
+      return;
+    }
     if (!cmd) return;
 
     const normalized = registry.normalizeInput(raw);
     if (state.easterEnabled) {
       if (normalized === "sudo rm -rf /" || normalized === "rm -rf /") {
-        startGlitch();
-        dispatch({ type: "append", lines: [{ text: "Nice try.", tone: "warn" }] });
+        const seq: [number, string, string?][] = [
+          [0,    "rm: /: seriously?",                               "err"  ],
+          [400,  "",                                                        ],
+          [600,  "  [░░░░░░░░░░░░░░░░░░░░]  0%   preparing...",    "warn" ],
+          [900,  "  [████░░░░░░░░░░░░░░░░]  20%  scanning...",     "warn" ],
+          [1200, "  [████████░░░░░░░░░░░░]  40%  deleting /usr...", "err"  ],
+          [1500, "  [████████████░░░░░░░░]  60%  deleting /etc...", "err"  ],
+          [1800, "  [████████████████░░░░]  80%  deleting /home..", "err"  ],
+          [2100, "  [████████████████████]  100% done.",            "err"  ],
+          [2400, "",                                                        ],
+          [2600, "just kidding. nice try though.",                  "dim"  ],
+        ];
+        seq.forEach(([delay, text, tone]) => {
+          setTimeout(() => {
+            dispatch({ type: "append", lines: [{ text, tone }] });
+            queueMicrotask(scrollToBottom);
+          }, delay as number);
+        });
+        return;
       }
+
+      if (normalized === "hack") {
+        const seq: [number, string, string?][] = [
+          [0,    "initialising hack sequence...",                       "dim"    ],
+          [300,  "",                                                              ],
+          [500,  "  [██░░░░░░░░░░░░░░░░░░]  scanning target...",       "warn"   ],
+          [900,  "  [██████░░░░░░░░░░░░░░]  bypassing firewall...",    "warn"   ],
+          [1300, "  [██████████░░░░░░░░░░]  decrypting mainframe...",  "accent" ],
+          [1700, "  [██████████████░░░░░░]  injecting payload...",     "accent" ],
+          [2100, "  [██████████████████░░]  extracting root token...", "accent" ],
+          [2500, "  [████████████████████]  done.",                    "ok"     ],
+          [2800, "",                                                              ],
+          [3000, "  ██████████████████████████████", "ok"],
+          [3100, "  █  ACCESS GRANTED            █", "ok"],
+          [3200, "  ██████████████████████████████", "ok"],
+          [3400, "",                                                              ],
+          [3600, "  Welcome, agent. You're in.",                        "dim"   ],
+        ];
+        seq.forEach(([delay, text, tone]) => {
+          setTimeout(() => {
+            dispatch({ type: "append", lines: [{ text, tone }] });
+            queueMicrotask(scrollToBottom);
+          }, delay as number);
+        });
+        setTimeout(() => dispatch({ type: "setHacked", on: true }), 3700);
+        return;
+      }
+
       if (normalized === "make me a sandwich") {
         dispatch({ type: "append", lines: [{ text: "No. (But you can have a cookie.)", tone: "em" }] });
       }
@@ -382,7 +437,9 @@ export default function Terminal() {
 
         <div className="promptRow">
           <div className="prompt" aria-hidden="true">
-            <span className="p-user">guest</span>
+            <span className={state.hacked ? "p-user hacked" : "p-user"}>
+              {state.hacked ? "agent" : "guest"}
+            </span>
             <span className="p-at">@</span>
             <span className="p-host">mlz</span>
             <span className="p-colon">:</span>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const MIN_HEIGHT_PX = 400; // never shrink below this
+const MIN_HEIGHT_PX = 580; // never shrink below the default
 const MAX_HEIGHT_VH = 92;  // never exceed 92vh
 
 export function useResize(defaultHeight: number) {

@@ -6,7 +6,6 @@ export interface OutputLine {
   parts?: { text: string; tone?: string }[];
 }
 
-// Side-effects that commands can request from the UI layer
 export type MatrixEffect = { type: "MATRIX"; mode: "on" | "off" | "toggle" };
 export type EasterEffect = { type: "EASTER"; enabled: boolean };
 export type CommandEffect = MatrixEffect | EasterEffect;
@@ -58,6 +57,10 @@ export function createCommandRegistry(): CommandRegistry {
       "",
       "Secret-ish stuff:",
       "  matrix      - a short rain of characters",
+      "  hack        - i'm in",
+      "  coffee      - essential dependency",
+      "  sudo        - nice try",
+      "  rm -rf /    - please don't",
       "  secrets off - disable easter eggs",
       "  secrets on  - enable easter eggs",
       "",
@@ -73,30 +76,49 @@ export function createCommandRegistry(): CommandRegistry {
         text: "",
         parts: [
           { text: "guest", tone: "accent" },
-          { text: " - but you already knew that.", tone: "dim" },
+          { text: " — but you already knew that.", tone: "dim" },
         ],
       },
       { text: "The real question is: who am I?", tone: "dim" },
       { text: "" },
-      { text: "Try 'about' to find out.", tone: "dim" },
+      { text: "  Try 'about' to find out.", tone: "dim" },
     ],
   }));
 
-  handlers.set("ls", () => ({
-    lines: [
-      { text: "── ~/", tone: "section" },
-      { text: "" },
-      { text: "about/       skills/       experience/", tone: "indent" },
-      { text: "contact/     links/        secrets/", tone: "indent" },
-      { text: "" },
-      { text: "(hint: they're commands, not folders)", tone: "indent dim" },
-    ],
-  }));
+  handlers.set("ls", (args: string[] = []) => {
+    const detailed = args.some((a) => a.includes("l"));
+
+    if (detailed) {
+      return {
+        lines: [
+          { text: "── ~/ ────────────────────────────────────", tone: "section" },
+          { text: "" },
+          { text: "drwxr-xr-x  guest  staff   about/",      tone: "indent" },
+          { text: "drwxr-xr-x  guest  staff   skills/",     tone: "indent" },
+          { text: "drwxr-xr-x  guest  staff   experience/", tone: "indent" },
+          { text: "drwxr-xr-x  guest  staff   contact/",    tone: "indent" },
+          { text: "drwxr-xr-x  guest  staff   links/",      tone: "indent" },
+          { text: "drwx------  guest  staff   secrets/",    tone: "indent warn" },
+          { text: "" },
+          { text: "(hint: they're commands, not folders)", tone: "indent dim" },
+        ],
+      };
+    }
+
+    return {
+      lines: [
+        { text: "── ~/", tone: "section" },
+        { text: "" },
+        { text: "about/       skills/       experience/", tone: "indent" },
+        { text: "contact/     links/        secrets/",    tone: "indent" },
+        { text: "" },
+        { text: "(hint: they're commands, not folders)", tone: "indent dim" },
+      ],
+    };
+  });
 
   handlers.set("pwd", () => ({
-    lines: [
-      { text: "/home/guest/somewhere-on-the-internet/mlz.no", tone: "ok" },
-    ],
+    lines: [{ text: "/home/guest/somewhere-on-the-internet/mlz.no", tone: "ok" }],
   }));
 
   handlers.set("about", () => ({
@@ -198,9 +220,9 @@ export function createCommandRegistry(): CommandRegistry {
     lines: [
       { text: "── Links ─────────────────────────────────", tone: "section" },
       { text: "" },
-      { text: "GitHub    → https://github.com/martinzachariassen", tone: "indent" },
+      { text: "GitHub    → https://github.com/martinzachariassen",           tone: "indent" },
       { text: "LinkedIn  → https://www.linkedin.com/in/martinzachariassen", tone: "indent" },
-      { text: "Homepage  → https://mlz.no", tone: "indent" },
+      { text: "Homepage  → https://mlz.no",                                  tone: "indent" },
       { text: "" },
       { text: "(links are clickable)", tone: "indent dim" },
       { text: "" },
@@ -210,11 +232,10 @@ export function createCommandRegistry(): CommandRegistry {
   handlers.set("open", (args: string[] = []) => {
     const target = args[0]?.toLowerCase();
     const targets: Record<string, { url: string; label: string }> = {
-      github:   { url: "https://github.com/martinzachariassen",                  label: "GitHub" },
-      linkedin: { url: "https://www.linkedin.com/in/martinzachariassen",         label: "LinkedIn" },
-      homepage: { url: "https://mlz.no",                                          label: "mlz.no" },
+      github:   { url: "https://github.com/martinzachariassen",              label: "GitHub"   },
+      linkedin: { url: "https://www.linkedin.com/in/martinzachariassen",    label: "LinkedIn" },
+      homepage: { url: "https://mlz.no",                                     label: "mlz.no"  },
     };
-
     if (!target || !targets[target]) {
       return {
         lines: [
@@ -224,7 +245,6 @@ export function createCommandRegistry(): CommandRegistry {
         ],
       };
     }
-
     const { url, label } = targets[target];
     window.open(url, "_blank", "noopener,noreferrer");
     return {
@@ -240,6 +260,43 @@ export function createCommandRegistry(): CommandRegistry {
     if (!text) return { lines: [{ text: "" }] };
     return { lines: [{ text }] };
   });
+
+  handlers.set("sudo", (args: string[] = []) => {
+    const cmd = args.join(" ");
+    if (cmd.toLowerCase().includes("make me a sandwich")) {
+      return { lines: [{ text: "Okay.", tone: "ok" }] };
+    }
+    return {
+      lines: [
+        { text: "Permission denied.", tone: "err" },
+        { text: "This incident will be reported.", tone: "dim" },
+      ],
+    };
+  });
+
+  handlers.set("coffee", () => ({
+    lines: [
+      { text: "      ( (",     tone: "warn"   },
+      { text: "       ) )",    tone: "warn"   },
+      { text: "    .______.",  tone: "accent" },
+      { text: "    |      |]", tone: "accent" },
+      { text: "    \\      /", tone: "accent" },
+      { text: "     `----'",   tone: "accent" },
+      { text: "" },
+      { text: "  Essential dependency installed.", tone: "ok"  },
+      { text: "  Productivity += 100.",            tone: "dim" },
+    ],
+  }));
+
+  // rm and hack are intercepted with staggered animations in Terminal.tsx
+  // when easter eggs are enabled. These are fallbacks for when they are off.
+  handlers.set("rm", (args: string[] = []) => ({
+    lines: [{ text: `rm: ${args.join(" ") || "missing operand"}`, tone: "err" }],
+  }));
+
+  handlers.set("hack", () => ({
+    lines: [{ text: "hack: permission denied.", tone: "err" }],
+  }));
 
   handlers.set("matrix", (args: string[] = []) => {
     const v = args[0]?.toLowerCase();
