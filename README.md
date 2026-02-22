@@ -1,8 +1,17 @@
 # mlz.no
 
-> Personal portfolio site - built as an interactive terminal.
+<p align="center">
+  <img src="public/favicon.png" alt="mlz.no logo" width="160" />
+</p>
 
-Live at **[mlz.no](https://mlz.no)**
+<p align="center">
+  <em>Personal portfolio site — built as an interactive terminal.</em>
+</p>
+
+<p align="center">
+  <a href="https://mlz.no"><strong>mlz.no</strong></a> &nbsp;·&nbsp;
+  <a href="./LICENSE">MIT</a>
+</p>
 
 ---
 
