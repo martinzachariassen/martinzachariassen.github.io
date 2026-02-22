@@ -120,7 +120,6 @@ button.dot {
 
 /* ─── Output log ─────────────────────────────────────────────────────────── */
 .output {
-  white-space: pre-wrap;
   line-height: 1.55;
   font-size: 14px;
   color: var(--fg);
@@ -129,6 +128,8 @@ button.dot {
   overflow-y: auto;
   overscroll-behavior: contain;
   padding-right: 6px;
+  word-break: break-word;
+  overflow-wrap: break-word;
 
   scrollbar-width: thin;
   scrollbar-color: rgba(122, 162, 247, 0.55) rgba(0, 0, 0, 0);

@@ -1,7 +1,17 @@
 /* ─── Base line ──────────────────────────────────────────────────────────── */
-.line { margin: 2px 0; }
+.line {
+  margin: 2px 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
 .line.spacer { margin: 0; line-height: 0; font-size: 0; }
 .line.br     { margin: 0; line-height: 1em; font-size: inherit; color: transparent; }
+/* Indented lines: hanging indent so wrapped text aligns under first char */
+.line.indent {
+  padding-left: 2ch;
+  text-indent: 0;
+}
 
 /* ─── Tone classes ───────────────────────────────────────────────────────── */
 .dim     { color: var(--dim); }
@@ -27,5 +37,15 @@
 /* ─── ASCII welcome header — hidden on small screens ────────────────────── */
 @media (max-width: 640px) {
   .line.ascii-header { display: none; }
+
+  /* Truncate long URLs on mobile rather than wrapping */
+  .link-url {
+    display: inline-block;
+    max-width: 42ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+    white-space: nowrap;
+  }
 }
 
