@@ -114,7 +114,7 @@ export default function Terminal() {
     dispatch({
       type: "append",
       lines: [
-        ...WELCOME_HEADER.split("\n").map((text) => ({ text, tone: "em" })),
+        ...WELCOME_HEADER.split("\n").map((text) => ({ text, tone: "em ascii-header" })),
         { text: "" },
         { text: "Type 'help' to see commands.", tone: "dim" },
         { text: "" },
