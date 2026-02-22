@@ -222,7 +222,7 @@ const COMMANDS = {
       "I like building systems that actually work in practice.",
       "Focus: scalability, robustness, and sustainable solutions over time.",
       "",
-      "I thrive at the intersection of engineering, operations, and architecture —",
+      "I thrive at the intersection of engineering, operations, and architecture -",
       "from design to production debugging.",
       "",
       "Keywords: clear priorities, transparency, and continuous learning.",
@@ -265,16 +265,15 @@ const COMMANDS = {
       "  email: zachariassen@hey.com",
       "  location: Norway",
       "",
-      "Replace this with your real email.",
     ].join("\n");
   },
 
   links() {
     return [
       "Links:",
-      "  GitHub:   https://github.com/<your-handle>",
-      "  LinkedIn: https://www.linkedin.com/in/<your-handle>/",
-      "  Blog:     https://mlz.no (this site)",
+      "  GitHub:   https://github.com/martinzachariassen",
+      "  LinkedIn: https://www.linkedin.com/in/martinzachariassen",
+      "  Homepage: https://mlz.no (this site)",
     ].join("\n");
   },
 
