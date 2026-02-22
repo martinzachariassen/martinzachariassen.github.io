@@ -1,0 +1,19 @@
+/* ─── Matrix canvas overlay ──────────────────────────────────────────────── */
+#matrix {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+body.matrix #matrix {
+  opacity: 0.92;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #matrix { transition: none; }
+}
+

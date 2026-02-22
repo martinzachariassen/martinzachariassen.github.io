@@ -1,0 +1,51 @@
+/* ─── Base line ──────────────────────────────────────────────────────────── */
+.line {
+  margin: 2px 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.line.spacer { margin: 0; line-height: 0; font-size: 0; }
+.line.br     { margin: 0; line-height: 1em; font-size: inherit; color: transparent; }
+/* Indented lines: hanging indent so wrapped text aligns under first char */
+.line.indent {
+  padding-left: 2ch;
+  text-indent: 0;
+}
+
+/* ─── Tone classes ───────────────────────────────────────────────────────── */
+.dim     { color: var(--dim); }
+.accent  { color: var(--accent); }
+.warn    { color: var(--warn); }
+.err     { color: var(--err); }
+.info    { color: var(--cyan); }
+.ok      { color: var(--green); }
+.em      { color: var(--magenta); }
+.section { color: var(--cyan); }
+
+/* ─── Glitch effect (short-lived, toggled via React state) ───────────────── */
+.output.glitch .line {
+  text-shadow:
+    1px 0 0 rgba(122, 162, 247, 0.65),
+    -1px 0 0 rgba(247, 118, 142, 0.55);
+}
+
+/* ─── Labelled links ─────────────────────────────────────────────────────── */
+.link-arrow { color: var(--dim); }
+.link-url   { color: var(--dim); font-size: 0.88em; }
+
+/* ─── ASCII welcome header — hidden on small screens ────────────────────── */
+@media (max-width: 640px) {
+  .line.ascii-header { display: none; }
+
+  /* Truncate long URLs on mobile rather than wrapping */
+  .link-url {
+    display: inline-block;
+    max-width: 42ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+    white-space: nowrap;
+  }
+}
+
