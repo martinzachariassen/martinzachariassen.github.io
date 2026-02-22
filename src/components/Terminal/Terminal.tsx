@@ -12,6 +12,7 @@ import { useKonami } from "../../easter/useKonami.js";
 
 interface TerminalLine extends OutputLine {
   id: string;
+  parts?: { text: string; tone?: string }[];
 }
 
 interface TerminalState {
@@ -40,7 +41,12 @@ function terminalReducer(state: TerminalState, action: Action): TerminalState {
       return {
         ...state,
         lines: state.lines.concat(
-          action.lines.map((l) => ({ id: uid(), tone: l.tone ?? "", text: l.text ?? "" }))
+          action.lines.map((l) => ({
+            id: uid(),
+            tone: l.tone ?? "",
+            text: l.text ?? "",
+            ...(l.parts ? { parts: l.parts } : {}),
+          }))
         ),
       };
     case "clear":
@@ -118,7 +124,7 @@ export default function Terminal() {
         { text: "" },
         { text: "Type 'help' to see commands.", tone: "dim" },
         { text: "" },
-        { text: "about  |  skills  |  links  |  contact", tone: "dim" },
+        { text: "about  |  experience  |  skills  |  links  |  contact", tone: "dim" },
         { text: "" },
       ],
     });
@@ -379,8 +385,8 @@ export default function Terminal() {
         <div className="hint">
           Try: <span className="accent">help</span>,{" "}
           <span className="accent">about</span>,{" "}
-          <span className="accent">skills</span>,{" "}
-          <span className="accent">links</span>
+          <span className="accent">experience</span>,{" "}
+          <span className="accent">open github</span>
         </div>
       </div>
     </div>
