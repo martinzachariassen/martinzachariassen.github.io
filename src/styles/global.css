@@ -1,0 +1,80 @@
+/* ─── Design tokens (Tokyo Night storm) ─────────────────────────────────── */
+:root {
+  --bg: #1a1b26;
+  --fg: #c0caf5;
+  --dim: #9aa5ce;
+  --accent: #7aa2f7;
+  --warn: #e0af68;
+  --err: #f7768e;
+  --border: rgba(192, 202, 245, 0.14);
+  --font: "JetBrains Mono NL", "JetBrainsMono Nerd Font", "JetBrains Mono",
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  --kbd: 0px;
+  --terminal-h: min(72dvh, 680px);
+
+  --cyan: #7dcfff;
+  --green: #9ece6a;
+  --magenta: #bb9af7;
+}
+
+/* ─── Reset ──────────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+
+/* ─── Body ───────────────────────────────────────────────────────────────── */
+body {
+  margin: 0;
+  background:
+    radial-gradient(1200px 800px at 20% 10%, rgba(122, 162, 247, 0.12), transparent 55%),
+    radial-gradient(900px 700px at 80% 60%, rgba(158, 206, 106, 0.10), transparent 55%),
+    var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+}
+
+/* ─── Links ──────────────────────────────────────────────────────────────── */
+a { color: #7dcfff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ─── Mobile ─────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  :root { --terminal-h: 70dvh; }
+}
+
+/* ─── Konami mode ────────────────────────────────────────────────────────── */
+body.konami {
+  --accent: #bb9af7;
+  --cyan: #7aa2f7;
+  --magenta: #7dcfff;
+  --green: #9ece6a;
+  background:
+    radial-gradient(1200px 800px at 20% 10%, rgba(187, 154, 247, 0.14), transparent 55%),
+    radial-gradient(900px 700px at 80% 60%, rgba(125, 207, 255, 0.10), transparent 55%),
+    var(--bg);
+}
+
+body.konami .terminal {
+  position: relative;
+}
+
+body.konami .terminal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.03),
+    rgba(255, 255, 255, 0.03) 1px,
+    rgba(0, 0, 0, 0) 3px,
+    rgba(0, 0, 0, 0) 6px
+  );
+  opacity: 0.25;
+  mix-blend-mode: overlay;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.konami .terminal::after { display: none; }
+}
+

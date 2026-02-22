@@ -1,15 +1,40 @@
 import { normalizeInput } from "./parseCommand.js";
 import { pickDeterministic } from "./text.js";
 
-function linesFromStrings(arr, tone) {
+export interface OutputLine {
+  text: string;
+  tone?: string;
+}
+
+// Side-effects that commands can request from the UI layer
+export type MatrixEffect = { type: "MATRIX"; mode: "on" | "off" | "toggle" };
+export type EasterEffect = { type: "EASTER"; enabled: boolean };
+export type CommandEffect = MatrixEffect | EasterEffect;
+
+export interface CommandResult {
+  lines: OutputLine[];
+  effects?: CommandEffect[];
+}
+
+type CommandHandler = (args: string[]) => CommandResult;
+
+function linesFromStrings(arr: string[], tone?: string): OutputLine[] {
   return arr.map((text) => ({ text, tone }));
 }
 
-export function createCommandRegistry() {
-  const handlers = new Map();
+export interface CommandRegistry {
+  has(cmd: string): boolean;
+  run(cmd: string, args: string[]): CommandResult;
+  normalizeInput(s: string): string;
+}
 
-  handlers.set("help", (args = []) => {
-    const wantsSecret = args.some((a) => a.toLowerCase() === "--secret" || a.toLowerCase() === "secret");
+export function createCommandRegistry(): CommandRegistry {
+  const handlers = new Map<string, CommandHandler>();
+
+  handlers.set("help", (args: string[] = []) => {
+    const wantsSecret = args.some(
+      (a) => a.toLowerCase() === "--secret" || a.toLowerCase() === "secret"
+    );
 
     const base = [
       "Available commands:",
@@ -73,7 +98,7 @@ export function createCommandRegistry() {
     ]),
   }));
 
-  handlers.set("projects", (args = []) => {
+  handlers.set("projects", (args: string[] = []) => {
     if (args[0]?.toLowerCase() === "invoice") {
       return {
         lines: [
@@ -120,7 +145,6 @@ export function createCommandRegistry() {
     ]),
   }));
 
-  // Easter egg commands
   handlers.set("fortune", () => {
     const fortunes = [
       "Fortune: Your next refactor will be small and satisfying.",
@@ -133,7 +157,7 @@ export function createCommandRegistry() {
     return { lines: [{ text: fortunes[Math.floor(Math.random() * fortunes.length)] }] };
   });
 
-  handlers.set("8ball", (args = []) => {
+  handlers.set("8ball", (args: string[] = []) => {
     const q = args.join(" ").trim();
     if (!q) return { lines: [{ text: "Usage: 8ball <your question>" }] };
 
@@ -161,35 +185,35 @@ export function createCommandRegistry() {
     ];
 
     const a = pickDeterministic(answers, `8ball:${q}`);
+    return { lines: [{ text: `Q: ${q}` }, { text: `A: ${a}` }] };
+  });
+
+  handlers.set("matrix", (args: string[] = []) => {
+    const v = args[0]?.toLowerCase();
+    if (v === "off")
+      return { lines: [{ text: "(matrix) off" }], effects: [{ type: "MATRIX" as const, mode: "off" as const }] };
+    if (v === "on")
+      return { lines: [{ text: "(matrix) on" }], effects: [{ type: "MATRIX" as const, mode: "on" as const }] };
     return {
-      lines: [
-        { text: `Q: ${q}` },
-        { text: `A: ${a}` },
-      ],
+      lines: [{ text: "(matrix) toggled" }],
+      effects: [{ type: "MATRIX" as const, mode: "toggle" as const }],
     };
   });
 
-  handlers.set("matrix", (args = []) => {
-    const v = args[0]?.toLowerCase();
-    if (v === "off") return { lines: [{ text: "(matrix) off" }], effects: [{ type: "MATRIX", mode: "off" }] };
-    if (v === "on") return { lines: [{ text: "(matrix) on" }], effects: [{ type: "MATRIX", mode: "on" }] };
-    return { lines: [{ text: "(matrix) toggled" }], effects: [{ type: "MATRIX", mode: "toggle" }] };
-  });
-
-  handlers.set("secrets", (args = []) => {
+  handlers.set("secrets", (args: string[] = []) => {
     const v = args[0]?.toLowerCase();
     if (v !== "on" && v !== "off") return { lines: [{ text: "Usage: secrets on|off" }] };
     return {
       lines: [{ text: v === "on" ? "Easter eggs enabled." : "Easter eggs disabled." }],
-      effects: [{ type: "EASTER", enabled: v === "on" }],
+      effects: [{ type: "EASTER" as const, enabled: v === "on" }],
     };
   });
 
   return {
-    has(cmd) {
+    has(cmd: string): boolean {
       return handlers.has(cmd);
     },
-    run(cmd, args) {
+    run(cmd: string, args: string[]): CommandResult {
       const h = handlers.get(cmd);
       if (!h) return { lines: [] };
       return h(args);

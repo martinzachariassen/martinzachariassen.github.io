@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const KONAMI = [
+const KONAMI: string[] = [
   "ArrowUp",
   "ArrowUp",
   "ArrowDown",
@@ -13,7 +13,16 @@ const KONAMI = [
   "a",
 ];
 
-export function useKonami({ enabled, onToggle }) {
+interface UseKonamiOptions {
+  enabled: boolean;
+  onToggle?: (active: boolean) => void;
+}
+
+interface UseKonamiResult {
+  active: boolean;
+}
+
+export function useKonami({ enabled, onToggle }: UseKonamiOptions): UseKonamiResult {
   const progressRef = useRef(0);
   const [active, setActive] = useState(false);
 
@@ -23,7 +32,7 @@ export function useKonami({ enabled, onToggle }) {
       return;
     }
 
-    const onKeyDown = (e) => {
+    const onKeyDown = (e: KeyboardEvent) => {
       const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
       const expected = KONAMI[progressRef.current];
 

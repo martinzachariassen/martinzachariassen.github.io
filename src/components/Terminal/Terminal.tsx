@@ -1,24 +1,47 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import "./Terminal.css";
 import { createCommandRegistry } from "../../terminal/commands.js";
+import type { CommandEffect, CommandResult, OutputLine } from "../../terminal/commands.js";
 import { parseCommand } from "../../terminal/parseCommand.js";
-import OutputLine from "./OutputLine.jsx";
-import MatrixOverlay from "../../easter/MatrixOverlay.jsx";
+import OutputLineComponent from "./OutputLine.js";
+import MatrixOverlay from "../../easter/MatrixOverlay.js";
 import { useKonami } from "../../easter/useKonami.js";
 
-function uid() {
+// ── Types ──────────────────────────────────────────────────────────────────
+
+interface TerminalLine extends OutputLine {
+  id: string;
+}
+
+interface TerminalState {
+  lines: TerminalLine[];
+  easterEnabled: boolean;
+  glitch: boolean;
+  matrixRunning: boolean;
+}
+
+type Action =
+  | { type: "append"; lines: OutputLine[] }
+  | { type: "clear" }
+  | { type: "setEasterEnabled"; enabled: boolean }
+  | { type: "setGlitch"; on: boolean }
+  | { type: "setMatrixRunning"; running: boolean };
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+function uid(): string {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function terminalReducer(state, action) {
+function terminalReducer(state: TerminalState, action: Action): TerminalState {
   switch (action.type) {
-    case "append": {
+    case "append":
       return {
         ...state,
         lines: state.lines.concat(
           action.lines.map((l) => ({ id: uid(), tone: l.tone ?? "", text: l.text ?? "" }))
         ),
       };
-    }
     case "clear":
       return { ...state, lines: [] };
     case "setEasterEnabled":
@@ -27,37 +50,40 @@ function terminalReducer(state, action) {
       return { ...state, glitch: action.on };
     case "setMatrixRunning":
       return { ...state, matrixRunning: action.running };
-    default:
-      return state;
   }
 }
+
+const INITIAL_STATE: TerminalState = {
+  lines: [],
+  easterEnabled: true,
+  glitch: false,
+  matrixRunning: false,
+};
+
+// ── Component ──────────────────────────────────────────────────────────────
 
 export default function Terminal() {
   const registry = useMemo(() => createCommandRegistry(), []);
 
-  const [state, dispatch] = useReducer(terminalReducer, {
-    lines: [],
-    easterEnabled: true,
-    glitch: false,
-    matrixRunning: false,
-    missStreak: 0,
-  });
-
+  const [state, dispatch] = useReducer(terminalReducer, INITIAL_STATE);
   const [inputValue, setInputValue] = useState("");
-  const historyRef = useRef({ list: [], idx: 0 });
+  const historyRef = useRef<{ list: string[]; idx: number }>({ list: [], idx: 0 });
 
-  const screenRef = useRef(null);
-  const outRef = useRef(null);
-  const inputRef = useRef(null);
+  const screenRef = useRef<HTMLDivElement>(null);
+  const outRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dotsProgressRef = useRef(0);
 
-  const reducedMotion = useMemo(() => {
-    return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
-  }, []);
+  const reducedMotion = useMemo(
+    () => window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false,
+    []
+  );
+
+  // ── Scroll / viewport ───────────────────────────────────────────────────
 
   const scrollToBottom = useCallback(() => {
     const out = outRef.current;
-    if (!out) return;
-    out.scrollTop = out.scrollHeight;
+    if (out) out.scrollTop = out.scrollHeight;
   }, []);
 
   const focusCmd = useCallback(({ scroll = true } = {}) => {
@@ -73,14 +99,13 @@ export default function Terminal() {
       document.documentElement.style.setProperty("--kbd", "0px");
       return;
     }
-
-    const innerH = window.innerHeight;
-    const kbd = Math.max(0, innerH - vv.height - vv.offsetTop);
+    const kbd = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
     document.documentElement.style.setProperty("--kbd", `${Math.round(kbd)}px`);
     scrollToBottom();
   }, [scrollToBottom]);
 
-  // Initial banner
+  // ── Initial banner ──────────────────────────────────────────────────────
+
   useEffect(() => {
     dispatch({
       type: "append",
@@ -92,17 +117,12 @@ export default function Terminal() {
         { text: "" },
       ],
     });
-
     syncViewport();
     queueMicrotask(scrollToBottom);
   }, [scrollToBottom, syncViewport]);
 
-  // keep scrolled as content grows
-  useEffect(() => {
-    scrollToBottom();
-  }, [scrollToBottom, state.lines.length]);
+  useEffect(() => { scrollToBottom(); }, [scrollToBottom, state.lines.length]);
 
-  // viewport listeners
   useEffect(() => {
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", syncViewport);
@@ -118,26 +138,29 @@ export default function Terminal() {
     };
   }, [syncViewport]);
 
+  // ── Easter eggs ─────────────────────────────────────────────────────────
+
+  const setBodyClass = useCallback((cls: string, on: boolean) => {
+    document.body.classList.toggle(cls, on);
+  }, []);
+
   const startGlitch = useCallback((ms = 1200) => {
-    if (!state.easterEnabled) return;
-    if (reducedMotion) return;
+    if (!state.easterEnabled || reducedMotion) return;
     dispatch({ type: "setGlitch", on: true });
     window.setTimeout(() => dispatch({ type: "setGlitch", on: false }), ms);
   }, [reducedMotion, state.easterEnabled]);
-
-  const setBodyClass = useCallback((cls, on) => {
-    document.body.classList.toggle(cls, !!on);
-  }, []);
 
   useKonami({
     enabled: state.easterEnabled,
     onToggle: (next) => {
       setBodyClass("konami", next);
-      dispatch({ type: "append", lines: [{ text: next ? "Konami mode: ON" : "Konami mode: OFF", tone: "ok" }] });
+      dispatch({
+        type: "append",
+        lines: [{ text: next ? "Konami mode: ON" : "Konami mode: OFF", tone: "ok" }],
+      });
     },
   });
 
-  // Ensure turning off easter eggs clears effects
   useEffect(() => {
     if (!state.easterEnabled) {
       setBodyClass("konami", false);
@@ -147,73 +170,80 @@ export default function Terminal() {
     }
   }, [setBodyClass, state.easterEnabled]);
 
-  // matrix body class
   useEffect(() => {
     setBodyClass("matrix", state.matrixRunning);
   }, [setBodyClass, state.matrixRunning]);
 
-  const applyEffects = useCallback((effects = []) => {
+  // ── Effect dispatcher ────────────────────────────────────────────────────
+
+  const applyEffects = useCallback((effects: CommandEffect[]) => {
     for (const eff of effects) {
       if (eff.type === "EASTER") {
-        dispatch({ type: "setEasterEnabled", enabled: !!eff.enabled });
+        dispatch({ type: "setEasterEnabled", enabled: eff.enabled });
+        continue;
       }
 
       if (eff.type === "MATRIX") {
         if (!state.easterEnabled) continue;
+
+        if (reducedMotion) {
+          dispatch({ type: "append", lines: [
+            { text: "(matrix) Reduced motion is on; printing vibes instead of animation.", tone: "info" },
+            { text: "01001101 01100001 01110100 01110010 01101001 01111000", tone: "ok" },
+            { text: "Wake up, Neo.", tone: "ok" },
+          ]});
+          continue;
+        }
+
         if (eff.mode === "off") dispatch({ type: "setMatrixRunning", running: false });
         else if (eff.mode === "on") dispatch({ type: "setMatrixRunning", running: true });
         else dispatch({ type: "setMatrixRunning", running: !state.matrixRunning });
-
-        if (reducedMotion) {
-          dispatch({ type: "append", lines: [{ text: "(matrix) Reduced motion is on; printing vibes instead of animation.", tone: "info" }] });
-          dispatch({ type: "append", lines: [{ text: "01001101 01100001 01110100 01110010 01101001 01111000", tone: "ok" }] });
-          dispatch({ type: "append", lines: [{ text: "Wake up, Neo.", tone: "ok" }] });
-          dispatch({ type: "setMatrixRunning", running: false });
-        }
       }
     }
   }, [reducedMotion, state.easterEnabled, state.matrixRunning]);
 
-  const runCommand = useCallback((raw) => {
+  // ── Command runner ───────────────────────────────────────────────────────
+
+  const runCommand = useCallback((raw: string) => {
     const { cmd, args } = parseCommand(raw);
 
     dispatch({ type: "append", lines: [{ text: `mlz@oslo:~$ ${raw}`, tone: "dim" }] });
 
-    if (cmd === "clear") {
-      dispatch({ type: "clear" });
-      return;
-    }
+    if (cmd === "clear") { dispatch({ type: "clear" }); return; }
     if (!cmd) return;
 
-    // phrase triggers
     const normalized = registry.normalizeInput(raw);
-    if (state.easterEnabled && (normalized === "sudo rm -rf /" || normalized === "rm -rf /")) {
-      startGlitch();
-      dispatch({ type: "append", lines: [{ text: "Nice try.", tone: "warn" }] });
-    }
-    if (state.easterEnabled && normalized === "make me a sandwich") {
-      dispatch({ type: "append", lines: [{ text: "No. (But you can have a cookie.)", tone: "em" }] });
+    if (state.easterEnabled) {
+      if (normalized === "sudo rm -rf /" || normalized === "rm -rf /") {
+        startGlitch();
+        dispatch({ type: "append", lines: [{ text: "Nice try.", tone: "warn" }] });
+      }
+      if (normalized === "make me a sandwich") {
+        dispatch({ type: "append", lines: [{ text: "No. (But you can have a cookie.)", tone: "em" }] });
+      }
     }
 
     if (!registry.has(cmd)) {
-      // miss streak fortune-ish hint
-      dispatch({ type: "append", lines: [{ text: `Command not found: ${cmd}`, tone: "err" }] });
-      dispatch({ type: "append", lines: [{ text: "Type 'help' to list commands.", tone: "dim" }] });
+      dispatch({ type: "append", lines: [
+        { text: `Command not found: ${cmd}`, tone: "err" },
+        { text: "Type 'help' to list commands.", tone: "dim" },
+      ]});
       return;
     }
 
-    const res = registry.run(cmd, args);
-    if (res?.lines?.length) dispatch({ type: "append", lines: res.lines });
-    if (res?.effects?.length) applyEffects(res.effects);
+    const res: CommandResult = registry.run(cmd, args);
+    if (res.lines.length) dispatch({ type: "append", lines: res.lines });
+    if (res.effects?.length) applyEffects(res.effects);
   }, [applyEffects, registry, startGlitch, state.easterEnabled]);
+
+  // ── Input handlers ───────────────────────────────────────────────────────
 
   const onSubmit = useCallback(() => {
     const value = inputValue;
-    if (value.trim().length) {
+    if (value.trim()) {
       historyRef.current.list.push(value);
       historyRef.current.idx = historyRef.current.list.length;
     }
-
     runCommand(value);
     setInputValue("");
     syncViewport();
@@ -221,64 +251,48 @@ export default function Terminal() {
 
   const historyPrev = useCallback(() => {
     const h = historyRef.current;
-    if (h.list.length === 0) return;
+    if (!h.list.length) return;
     h.idx = Math.max(0, h.idx - 1);
     setInputValue(h.list[h.idx] ?? "");
     queueMicrotask(() => {
       const el = inputRef.current;
-      if (!el) return;
-      el.setSelectionRange(el.value.length, el.value.length);
+      if (el) el.setSelectionRange(el.value.length, el.value.length);
     });
   }, []);
 
   const historyNext = useCallback(() => {
     const h = historyRef.current;
-    if (h.list.length === 0) return;
+    if (!h.list.length) return;
     h.idx = Math.min(h.list.length, h.idx + 1);
     setInputValue(h.idx === h.list.length ? "" : (h.list[h.idx] ?? ""));
     queueMicrotask(() => {
       const el = inputRef.current;
-      if (!el) return;
-      el.setSelectionRange(el.value.length, el.value.length);
+      if (el) el.setSelectionRange(el.value.length, el.value.length);
     });
   }, []);
 
-  const onKeyDown = useCallback((e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      onSubmit();
-      return;
-    }
-
-    if (e.key === "ArrowUp") {
-      e.preventDefault();
-      historyPrev();
-    }
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      historyNext();
-    }
+  const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") { e.preventDefault(); onSubmit(); return; }
+    if (e.key === "ArrowUp") { e.preventDefault(); historyPrev(); }
+    if (e.key === "ArrowDown") { e.preventDefault(); historyNext(); }
   }, [historyNext, historyPrev, onSubmit]);
 
-  const onScreenPointerDown = useCallback((e) => {
-    const t = e.target;
-    if (t instanceof HTMLElement) {
-      if (t.closest("a,button,input")) return;
-    }
+  const onScreenPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.target instanceof HTMLElement && e.target.closest("a,button,input")) return;
     focusCmd();
   }, [focusCmd]);
 
-  const dotsProgressRef = useRef(0);
-  const onDotActivate = useCallback((index) => {
+  const onDotActivate = useCallback((index: number) => {
     if (!state.easterEnabled) return;
     const expected = dotsProgressRef.current;
-
     if (index === expected) {
       dotsProgressRef.current += 1;
       if (dotsProgressRef.current === 3) {
         dotsProgressRef.current = 0;
-        dispatch({ type: "append", lines: [{ text: "Window controls engaged...", tone: "dim" }, { text: "Minimizing... just kidding.", tone: "ok" }] });
+        dispatch({ type: "append", lines: [
+          { text: "Window controls engaged...", tone: "dim" },
+          { text: "Minimizing... just kidding.", tone: "ok" },
+        ]});
         startGlitch(800);
       }
     } else {
@@ -286,11 +300,13 @@ export default function Terminal() {
     }
   }, [startGlitch, state.easterEnabled]);
 
+  // ── Render ───────────────────────────────────────────────────────────────
+
   return (
     <div className="terminal" aria-label="Terminal style homepage">
       <div className="titlebar">
         <div className="dots" role="group" aria-label="Window controls">
-          {[0, 1, 2].map((i) => (
+          {([0, 1, 2] as const).map((i) => (
             <button
               key={i}
               type="button"
@@ -313,12 +329,12 @@ export default function Terminal() {
         <div
           id="out"
           ref={outRef}
-          className={`output ${state.glitch ? "glitch" : ""}`.trim()}
+          className={`output${state.glitch ? " glitch" : ""}`}
           role="log"
           aria-live="polite"
         >
           {state.lines.map((l) => (
-            <OutputLine key={l.id} line={l} />
+            <OutputLineComponent key={l.id} line={l} />
           ))}
         </div>
 
@@ -351,15 +367,13 @@ export default function Terminal() {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={onKeyDown}
-            onFocus={() => {
-              syncViewport();
-              queueMicrotask(scrollToBottom);
-            }}
+            onFocus={() => { syncViewport(); queueMicrotask(scrollToBottom); }}
           />
         </div>
 
         <div className="hint">
-          Try: <span className="accent">help</span>, <span className="accent">about</span>,{" "}
+          Try: <span className="accent">help</span>,{" "}
+          <span className="accent">about</span>,{" "}
           <span className="accent">links</span>
         </div>
       </div>

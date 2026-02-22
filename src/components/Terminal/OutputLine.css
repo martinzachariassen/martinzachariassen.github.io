@@ -1,0 +1,19 @@
+/* ─── Base line ──────────────────────────────────────────────────────────── */
+.line { margin: 2px 0; }
+
+/* ─── Tone classes ───────────────────────────────────────────────────────── */
+.dim     { color: var(--dim); }
+.accent  { color: var(--accent); }
+.warn    { color: var(--warn); }
+.err     { color: var(--err); }
+.info    { color: var(--cyan); }
+.ok      { color: var(--green); }
+.em      { color: var(--magenta); }
+
+/* ─── Glitch effect (short-lived, toggled via React state) ───────────────── */
+.output.glitch .line {
+  text-shadow:
+    1px 0 0 rgba(122, 162, 247, 0.65),
+    -1px 0 0 rgba(247, 118, 142, 0.55);
+}
+

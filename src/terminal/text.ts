@@ -1,11 +1,12 @@
-function escapeHtml(s) {
+export type TextPart = { type: "text"; value: string } | { type: "link"; value: string };
+
+function escapeHtml(s: string): string {
   return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
-export function linkifyToParts(text) {
-  // Returns an array of { type: 'text'|'link', value }
+export function linkifyToParts(text: string): TextPart[] {
   const re = /(https?:\/\/[^\s]+)/g;
-  const out = [];
+  const out: TextPart[] = [];
 
   const safe = String(text ?? "");
   let lastIndex = 0;
@@ -24,7 +25,7 @@ export function linkifyToParts(text) {
   return out;
 }
 
-export function hashString(s) {
+export function hashString(s: string): number {
   // small deterministic hash (not crypto)
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) {
@@ -34,7 +35,7 @@ export function hashString(s) {
   return h >>> 0;
 }
 
-export function pickDeterministic(list, seedStr) {
+export function pickDeterministic<T>(list: T[], seedStr: string): T {
   const idx = hashString(seedStr) % list.length;
   return list[idx];
 }

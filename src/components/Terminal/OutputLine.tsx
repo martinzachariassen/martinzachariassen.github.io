@@ -1,6 +1,12 @@
 import { linkifyToParts } from "../../terminal/text.js";
+import "./OutputLine.css";
+import type { OutputLine as OutputLineType } from "../../terminal/commands.js";
 
-export default function OutputLine({ line }) {
+interface Props {
+  line: OutputLineType & { id: string };
+}
+
+export default function OutputLine({ line }: Props) {
   const parts = linkifyToParts(line.text);
 
   return (
@@ -13,8 +19,7 @@ export default function OutputLine({ line }) {
             </a>
           );
         }
-
-        // parts are already escaped
+        // parts are already HTML-escaped
         return <span key={idx} dangerouslySetInnerHTML={{ __html: p.value }} />;
       })}
     </div>

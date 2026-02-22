@@ -1,20 +1,34 @@
 import { useEffect, useMemo, useRef } from "react";
+import "./MatrixOverlay.css";
 
-export default function MatrixOverlay({ enabled, running, onStop, durationMs = 9000 }) {
-  const canvasRef = useRef(null);
-  const rafRef = useRef(0);
-  const timerRef = useRef(0);
-  const resizeHandlerRef = useRef(null);
+interface MatrixOverlayProps {
+  enabled: boolean;
+  running: boolean;
+  onStop?: () => void;
+  durationMs?: number;
+}
 
-  const reducedMotion = useMemo(() => {
-    return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
-  }, []);
+export default function MatrixOverlay({
+  enabled,
+  running,
+  onStop,
+  durationMs = 9000,
+}: MatrixOverlayProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rafRef = useRef<number>(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resizeHandlerRef = useRef<(() => void) | null>(null);
+
+  const reducedMotion = useMemo(
+    () => window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false,
+    []
+  );
 
   useEffect(() => {
     const stop = () => {
-      if (timerRef.current) window.clearTimeout(timerRef.current);
+      if (timerRef.current !== null) window.clearTimeout(timerRef.current);
       if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
-      timerRef.current = 0;
+      timerRef.current = null;
       rafRef.current = 0;
       if (resizeHandlerRef.current) {
         window.removeEventListener("resize", resizeHandlerRef.current);
@@ -23,26 +37,20 @@ export default function MatrixOverlay({ enabled, running, onStop, durationMs = 9
 
       const canvas = canvasRef.current;
       if (canvas) {
-        const ctx = canvas.getContext?.("2d");
+        const ctx = canvas.getContext("2d");
         if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
 
       onStop?.();
     };
 
-    if (!enabled || !running) {
-      stop();
-      return;
-    }
-
-    if (reducedMotion) {
-      // Nothing to animate; let the terminal print text instead.
+    if (!enabled || !running || reducedMotion) {
       stop();
       return;
     }
 
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext?.("2d");
+    const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
 
     const dpr = Math.max(1, window.devicePixelRatio || 1);
@@ -57,15 +65,15 @@ export default function MatrixOverlay({ enabled, running, onStop, durationMs = 9
 
     const letters = "abcdefghijklmnopqrstuvwxyz0123456789#$%&*+@";
     const fontSize = 14;
-    const rect = canvas.getBoundingClientRect();
-    const columns = Math.max(1, Math.floor(rect.width / fontSize));
-    const drops = Array.from({ length: columns }, () => Math.random() * rect.height);
+    const { width, height } = canvas.getBoundingClientRect();
+    const columns = Math.max(1, Math.floor(width / fontSize));
+    const drops = Array.from({ length: columns }, () => Math.random() * height);
 
     const tick = () => {
-      const { width, height } = canvas.getBoundingClientRect();
+      const rect = canvas.getBoundingClientRect();
 
       ctx.fillStyle = "rgba(26, 27, 38, 0.20)";
-      ctx.fillRect(0, 0, width, height);
+      ctx.fillRect(0, 0, rect.width, rect.height);
 
       ctx.font = `${fontSize}px JetBrains Mono, monospace`;
       ctx.fillStyle = "rgba(158, 206, 106, 0.85)";
@@ -77,7 +85,7 @@ export default function MatrixOverlay({ enabled, running, onStop, durationMs = 9
         ctx.fillText(ch, x, y);
 
         drops[i] = y + fontSize;
-        if (drops[i] > height && Math.random() > 0.975) drops[i] = 0;
+        if (drops[i] > rect.height && Math.random() > 0.975) drops[i] = 0;
       }
 
       rafRef.current = window.requestAnimationFrame(tick);
