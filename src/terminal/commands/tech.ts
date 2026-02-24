@@ -8,7 +8,7 @@ export const tech = (): CommandResult => ({
       text: "",
       parts: [
         { text: "▸ ", tone: "cyan" },
-        { text: "Backend & Build", tone: "accent" },
+        { text: "Backend & API", tone: "accent" },
       ],
     },
     {
@@ -19,8 +19,24 @@ export const tech = (): CommandResult => ({
         { text: "Ktor", tone: "ok" },
         { text: "  ·  ", tone: "dim" },
         { text: "OpenAPI", tone: "ok" },
+      ],
+    },
+    {
+      text: "",
+      parts: [
+        { text: "  Spring WebClient", tone: "ok" },
         { text: "  ·  ", tone: "dim" },
-        { text: "Maven", tone: "ok" },
+        { text: "Spring Data JPA", tone: "ok" },
+        { text: "  ·  ", tone: "dim" },
+        { text: "Hibernate", tone: "ok" },
+      ],
+    },
+    {
+      text: "",
+      parts: [
+        { text: "  SLF4J", tone: "ok" },
+        { text: "  ·  ", tone: "dim" },
+        { text: "Logback", tone: "ok" },
       ],
     },
     { text: "" },
@@ -28,7 +44,23 @@ export const tech = (): CommandResult => ({
       text: "",
       parts: [
         { text: "▸ ", tone: "cyan" },
-        { text: "Database", tone: "accent" },
+        { text: "Build & Quality", tone: "accent" },
+      ],
+    },
+    {
+      text: "",
+      parts: [
+        { text: "  Maven", tone: "ok" },
+        { text: "  ·  ", tone: "dim" },
+        { text: "SonarQube", tone: "ok" },
+      ],
+    },
+    { text: "" },
+    {
+      text: "",
+      parts: [
+        { text: "▸ ", tone: "cyan" },
+        { text: "Database & Migration", tone: "accent" },
       ],
     },
     {
@@ -104,11 +136,13 @@ export const tech = (): CommandResult => ({
     {
       text: "",
       parts: [
-        { text: "  Datadog", tone: "ok" },
+        { text: "  OpenTelemetry", tone: "ok" },
+        { text: "  ·  ", tone: "dim" },
+        { text: "Prometheus", tone: "ok" },
         { text: "  ·  ", tone: "dim" },
         { text: "Grafana", tone: "ok" },
         { text: "  ·  ", tone: "dim" },
-        { text: "Prometheus", tone: "ok" },
+        { text: "Datadog", tone: "ok" },
       ],
     },
     { text: "" },
@@ -134,7 +168,7 @@ export const tech = (): CommandResult => ({
       text: "",
       parts: [
         { text: "▸ ", tone: "cyan" },
-        { text: "Tooling", tone: "accent" },
+        { text: "Work Tools", tone: "accent" },
       ],
     },
     {
