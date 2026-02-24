@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from "react";
 import type { Dispatch } from "react";
-import { useKonami } from "../../easter/useKonami.js";
-import type { CommandEffect } from "../../terminal/commands.js";
-import type { Action, TerminalState } from "./terminalReducer.js";
+import { useKonami } from "../../../easter/useKonami.js";
+import type { CommandEffect } from "../../../terminal/commands.js";
+import type { Action, TerminalState } from "../state/terminalReducer.js";
 
 interface UseEasterEggsOptions {
   state: TerminalState;

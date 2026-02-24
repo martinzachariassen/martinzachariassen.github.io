@@ -1,4 +1,4 @@
-import type { OutputLine } from "../../terminal/commands.js";
+import type { OutputLine } from "../../../terminal/commands.js";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -65,4 +65,5 @@ export const INITIAL_STATE: TerminalState = {
   matrixRunning: false,
   hacked: false,
 };
+
 

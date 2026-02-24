@@ -1,7 +1,8 @@
 import { normalizeInput } from "../parseCommand.js";
 import { helpHandler } from "./help.js";
-import { about, focus } from "./about.js";
-import { tech } from "./tech.js";
+import { about } from "./about.js";
+import { focus } from "./focus.js";
+import { tech } from "./tech/index.js";
 import { experience } from "./experience.js";
 import { contact, links, openLink } from "./contact.js";
 import { whoami, ls, pwd, echo, sudo } from "./system.js";

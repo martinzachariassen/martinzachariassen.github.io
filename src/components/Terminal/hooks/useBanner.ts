@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { Dispatch } from "react";
-import type { Action } from "./terminalReducer.js";
+import type { Action } from "../state/terminalReducer.js";
 
 interface UseBannerOptions {
   dispatch: Dispatch<Action>;

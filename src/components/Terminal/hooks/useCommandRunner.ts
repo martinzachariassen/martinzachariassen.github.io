@@ -1,8 +1,8 @@
 import { useCallback, useRef, useState } from "react";
 import type { Dispatch, RefObject } from "react";
-import { parseCommand } from "../../terminal/parseCommand.js";
-import type { CommandEffect, CommandRegistry, CommandResult } from "../../terminal/commands.js";
-import type { Action, TerminalState } from "./terminalReducer.js";
+import { parseCommand } from "../../../terminal/parseCommand.js";
+import type { CommandEffect, CommandRegistry, CommandResult } from "../../../terminal/commands.js";
+import type { Action, TerminalState } from "../state/terminalReducer.js";
 
 interface UseCommandRunnerOptions {
   state: TerminalState;

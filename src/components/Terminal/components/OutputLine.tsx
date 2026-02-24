@@ -1,6 +1,6 @@
-import { linkifyToParts } from "../../terminal/text.js";
+import { linkifyToParts } from "../../../terminal/text.js";
 import "./OutputLine.css";
-import type { OutputLine as OutputLineType } from "../../terminal/commands.js";
+import type { OutputLine as OutputLineType } from "../../../terminal/commands.js";
 
 interface Props {
   line: OutputLineType & { id: string };

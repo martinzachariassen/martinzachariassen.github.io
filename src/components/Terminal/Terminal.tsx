@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import "./Terminal.css";
 import { createCommandRegistry } from "../../terminal/commands.js";
-import OutputLineComponent from "./OutputLine.js";
+import OutputLineComponent from "./components/OutputLine.js";
 import MatrixOverlay from "../../easter/MatrixOverlay.js";
-import { useResize } from "./useResize.js";
-import { terminalReducer, INITIAL_STATE } from "./terminalReducer.js";
-import { useViewport } from "./useViewport.js";
-import { useViewportEvents } from "./useViewportEvents.js";
-import { useBanner } from "./useBanner.js";
-import { useEasterEggs } from "./useEasterEggs.js";
-import { useCommandRunner } from "./useCommandRunner.js";
-import TerminalPrompt from "./TerminalPrompt.js";
+import { useResize } from "./hooks/useResize.js";
+import { terminalReducer, INITIAL_STATE } from "./state/terminalReducer.js";
+import { useViewport } from "./hooks/useViewport.js";
+import { useViewportEvents } from "./hooks/useViewportEvents.js";
+import { useBanner } from "./hooks/useBanner.js";
+import { useEasterEggs } from "./hooks/useEasterEggs.js";
+import { useCommandRunner } from "./hooks/useCommandRunner.js";
+import TerminalPrompt from "./components/TerminalPrompt.js";
 
 export default function Terminal() {
   const registry = useMemo(() => createCommandRegistry(), []);
