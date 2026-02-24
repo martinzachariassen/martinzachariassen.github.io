@@ -36,11 +36,13 @@ export function useBanner({
 
     const sequence: [number, string, string?][] = isMobile
       ? [
-          [0, `mlz.no  ${__APP_VERSION__}`, "accent"],
-          [0, ""],
-          [0, "  guest@mlz — welcome.", "ok"],
-          [0, "  Type 'help' to get started.", "dim"],
-          [0, ""],
+          [0,   `mlz.no  ${__APP_VERSION__}`,                    "accent"],
+          [0,   ""],
+          [0,   `  ${timestamp}`,                                 "dim"  ],
+          [0,   "  guest@mlz — welcome.",                         "ok"   ],
+          [0,   ""],
+          [0,   "  Type 'help' to see available commands.",        "dim"  ],
+          [0,   ""],
         ]
       : [
           [0,    `mlz.no  ${__APP_VERSION__}`,               "accent"],

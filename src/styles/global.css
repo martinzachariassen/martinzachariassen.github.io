@@ -95,9 +95,16 @@ a:hover { text-decoration: underline; }
     font-size: 14px;
   }
 
-  html, body {
+  html {
     height: 100%;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  body {
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   /* Skip expensive gradient on mobile — saves paint + battery */

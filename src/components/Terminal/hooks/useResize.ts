@@ -1,10 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const MIN_HEIGHT_PX = 580; // never shrink below the default
-const MAX_HEIGHT_VH = 92;  // never exceed 92vh
+const DEFAULT_HEIGHT_VH = 75; // initial fill — 75% of viewport height
+const MIN_HEIGHT_VH     = 40; // never shrink below 40vh when dragging
+const MAX_HEIGHT_VH     = 92; // never exceed 92vh
 
-export function useResize(defaultHeight: number) {
-  const [height, setHeight] = useState<number>(defaultHeight);
+function calcDefault() {
+  return Math.round((window.innerHeight * DEFAULT_HEIGHT_VH) / 100);
+}
+
+function calcMin() {
+  return Math.round((window.innerHeight * MIN_HEIGHT_VH) / 100);
+}
+
+export function useResize(_defaultHeight?: number) {
+  const [height, setHeight] = useState<number>(calcDefault);
   const dragging = useRef(false);
   const startY = useRef(0);
   const startH = useRef(0);
@@ -13,6 +22,17 @@ export function useResize(defaultHeight: number) {
     () => window.matchMedia("(max-width: 640px)").matches,
     []
   );
+
+  // Re-fit when the window is resized (e.g. browser zoom, new window size)
+  useEffect(() => {
+    const onResize = () => {
+      if (!dragging.current && !isMobile()) {
+        setHeight(calcDefault());
+      }
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [isMobile]);
 
   const onMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -31,8 +51,8 @@ export function useResize(defaultHeight: number) {
     const onMouseMove = (e: MouseEvent) => {
       if (!dragging.current) return;
       const delta = e.clientY - startY.current;
-      const maxH = (window.innerHeight * MAX_HEIGHT_VH) / 100;
-      const next = Math.min(maxH, Math.max(MIN_HEIGHT_PX, startH.current + delta));
+      const maxH = Math.round((window.innerHeight * MAX_HEIGHT_VH) / 100);
+      const next = Math.min(maxH, Math.max(calcMin(), startH.current + delta));
       setHeight(next);
     };
 
@@ -53,4 +73,3 @@ export function useResize(defaultHeight: number) {
 
   return { height, onMouseDown };
 }
-

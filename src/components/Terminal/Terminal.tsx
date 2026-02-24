@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import "./Terminal.css";
 import { createCommandRegistry } from "../../terminal/commands.js";
 import OutputLineComponent from "./components/OutputLine.js";
@@ -14,7 +14,7 @@ import TerminalPrompt from "./components/TerminalPrompt.js";
 
 export default function Terminal() {
   const registry = useMemo(() => createCommandRegistry(), []);
-  const { height, onMouseDown: onResizeMouseDown } = useResize(580);
+  const { height, onMouseDown: onResizeMouseDown } = useResize();
 
   const [state, dispatch] = useReducer(terminalReducer, INITIAL_STATE);
 
@@ -65,7 +65,13 @@ export default function Terminal() {
 
   // ── Render ───────────────────────────────────────────────────────────────
 
-  const isMobile = window.innerWidth <= 640;
+  const mobileQuery = useMemo(() => window.matchMedia("(max-width: 640px)"), []);
+  const [isMobile, setIsMobile] = useState(() => mobileQuery.matches);
+  useEffect(() => {
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mobileQuery.addEventListener("change", handler);
+    return () => mobileQuery.removeEventListener("change", handler);
+  }, [mobileQuery]);
 
   return (
     <div className="terminal-wrapper">
@@ -87,7 +93,15 @@ export default function Terminal() {
               />
             ))}
           </div>
-          <div className="title">mlz.no — terminal</div>
+          <div className="title" aria-label={state.hacked ? "agent at mlz, home directory" : "guest at mlz, home directory"}>
+            <span className={state.hacked ? "title-user hacked" : "title-user"}>
+              {state.hacked ? "agent" : "guest"}
+            </span>
+            <span className="title-at">@</span>
+            <span className="title-host">mlz.no</span>
+            <span className="title-sep">:</span>
+            <span className="title-path">~</span>
+          </div>
         </div>
 
         <div

@@ -1,7 +1,7 @@
 /* ─── Wrapper ────────────────────────────────────────────────────────────── */
 .terminal-wrapper {
   max-width: 980px;
-  margin: 48px auto;
+  margin: 0 auto;
   padding-bottom: 12px;
   position: relative;
 }
@@ -27,9 +27,10 @@
     border-left: none;
     border-right: none;
     box-shadow: none;
-    /* JS (syncViewport) sets this to visualViewport.height on every resize */
-    /* transition smooths keyboard open/close so nothing jumps */
+    /* Fill whatever height the JS gives us (visualViewport minus header) */
     transition: height 120ms ease-out;
+    /* Minimum so it's never too squashed */
+    min-height: 60dvh;
   }
 }
 
@@ -99,21 +100,30 @@
 
 @media (max-width: 640px) {
   .titlebar {
-    padding: calc(10px + env(safe-area-inset-top)) 12px 10px;
-    gap: 8px;
+    padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+    gap: 10px;
   }
+
+  .dots { display: none; }
 }
 
 .title {
   margin-left: 6px;
   font-size: 13px;
-  color: var(--dim);
+  user-select: none;
 }
+
+.title-user         { color: var(--green); font-weight: 700; }
+.title-user.hacked  { color: var(--err);   font-weight: 700; }
+.title-at   { color: var(--dim);     font-weight: 400; }
+.title-host { color: var(--cyan);    font-weight: 700; }
+.title-sep  { color: var(--dim);     font-weight: 400; }
+.title-path { color: var(--magenta); font-weight: 400; }
 
 @media (max-width: 640px) {
   .title {
     font-size: 12px;
-    margin-left: 2px;
+    margin-left: 0;
   }
 }
 
@@ -185,7 +195,7 @@ button.dot {
     flex: 1 1 auto;
     min-height: 0;
     height: auto;
-    padding: 10px 12px calc(10px + env(safe-area-inset-bottom)) 12px;
+    padding: 10px 12px calc(10px + var(--kbd) + env(safe-area-inset-bottom)) 12px;
     gap: 8px;
   }
 }

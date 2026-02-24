@@ -13,18 +13,22 @@ export function useViewport({ terminalRef, scrollToBottom }: UseViewportOptions)
     const vv = window.visualViewport;
     const isMobile = window.innerWidth <= 640;
 
+    // Keyboard inset — works on both mobile and desktop
+    const kbd = vv
+      ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop)
+      : 0;
+    document.documentElement.style.setProperty("--kbd", `${Math.round(kbd)}px`);
+
     if (isMobile && terminalRef.current) {
-      const h = vv ? Math.round(vv.height) : window.innerHeight;
-      terminalRef.current.style.height = `${h}px`;
-    } else if (!isMobile) {
-      const kbd = vv
-        ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop)
-        : 0;
-      document.documentElement.style.setProperty("--kbd", `${Math.round(kbd)}px`);
+      const viewH = vv ? Math.round(vv.height) : window.innerHeight;
+      // Subtract the NameHeader so the terminal doesn't push off screen
+      const header = document.querySelector(".name-header");
+      const headerH = header ? header.getBoundingClientRect().height : 0;
+      const termH = Math.max(200, viewH - Math.round(headerH));
+      terminalRef.current.style.height = `${termH}px`;
     }
 
     // Defer scroll until after the 120ms CSS transition on .terminal height
-    // so we don't scroll to a stale position mid-animation.
     if (!scrollScheduled.current) {
       scrollScheduled.current = true;
       setTimeout(() => {

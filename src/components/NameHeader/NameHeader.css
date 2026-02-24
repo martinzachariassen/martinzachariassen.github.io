@@ -1,0 +1,70 @@
+/* ─── Name header (above the terminal) ───────────────────────────────────── */
+.name-header {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 44px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ─── H1 ─────────────────────────────────────────────────────────────────── */
+.name-header__title {
+  margin: 0;
+  font-family: var(--font);
+  font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+
+  /* Subtle gradient: accent → cyan, static — no shimmer */
+  background: linear-gradient(105deg, var(--accent) 30%, var(--cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Subtitle ───────────────────────────────────────────────────────────── */
+.name-header__sub {
+  margin: 0;
+  font-family: var(--font);
+  font-size: clamp(0.75rem, 1.6vw, 0.85rem);
+  color: var(--dim);
+  line-height: 1.5;
+}
+
+.name-header__role {
+  color: var(--fg);
+  opacity: 0.75;
+}
+
+.name-header__sep {
+  color: var(--accent);
+  opacity: 0.5;
+  padding: 0 0.5ch;
+}
+
+.name-header__desc {
+  color: var(--dim);
+}
+
+/* ─── Mobile ─────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .name-header {
+    padding: 20px 16px 14px;
+    gap: 4px;
+  }
+
+  .name-header__title {
+    font-size: 1.6rem;
+  }
+
+  /* Hide the dot separator and put desc on its own line */
+  .name-header__sep  { display: none; }
+  .name-header__desc { display: block; margin-top: 2px; }
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .name-header__title { animation: none; }
+}
