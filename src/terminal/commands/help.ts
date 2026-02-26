@@ -25,7 +25,7 @@ export const helpHandler = (): CommandHandler =>
     ];
 
     if (!wantsSecret) {
-      base.push("", "Tip: try  help --secret");
+      base.push("", "Tip: Tab to autocomplete  ·  ↑↓ for history  ·  help --secret");
       return { lines: linesFromStrings(base) };
     }
 

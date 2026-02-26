@@ -40,6 +40,11 @@ export function useCommandRunner({
     if (cmd === "clear") {
       dispatch({ type: "clear" });
       dispatch({ type: "setHacked", on: false });
+      dispatch({ type: "append", lines: [
+        { text: "  Screen cleared.", tone: "dim" },
+        { text: "  Type 'help' to see available commands.", tone: "dim" },
+        { text: "" },
+      ]});
       return;
     }
     if (!cmd) return;
@@ -151,9 +156,29 @@ export function useCommandRunner({
 
   const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter")     { e.preventDefault(); onSubmit();    return; }
-    if (e.key === "ArrowUp")   { e.preventDefault(); historyPrev(); }
-    if (e.key === "ArrowDown") { e.preventDefault(); historyNext(); }
-  }, [historyNext, historyPrev, onSubmit]);
+    if (e.key === "ArrowUp")   { e.preventDefault(); historyPrev(); return; }
+    if (e.key === "ArrowDown") { e.preventDefault(); historyNext(); return; }
+
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const partial = inputValue.trim().toLowerCase();
+      if (!partial) return;
+      const commands = Array.from(
+        ["help","whoami","about","focus","tech","experience","contact","links",
+         "open","clear","echo","sudo","coffee","hack","matrix","rm","secrets"]
+      );
+      const matches = commands.filter((c) => c.startsWith(partial));
+      if (matches.length === 1) {
+        setInputValue(matches[0]);
+      } else if (matches.length > 1) {
+        dispatch({ type: "append", lines: [
+          { text: `guest@mlz:~$ ${inputValue}`, tone: "dim" },
+          { text: matches.join("  "), tone: "dim" },
+        ]});
+        queueMicrotask(scrollToBottom);
+      }
+    }
+  }, [dispatch, historyNext, historyPrev, inputValue, onSubmit, scrollToBottom, setInputValue]);
 
   // ── Pointer / focus ──────────────────────────────────────────────────────
 

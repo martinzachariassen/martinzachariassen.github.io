@@ -22,10 +22,13 @@ export default function Terminal() {
   const outRef      = useRef<HTMLDivElement>(null);
   const inputRef    = useRef<HTMLInputElement>(null);
 
-  const reducedMotion = useMemo(
-    () => window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false,
-    []
-  );
+  const motionQuery = useMemo(() => window.matchMedia("(prefers-reduced-motion: reduce)"), []);
+  const [reducedMotion, setReducedMotion] = useState(() => motionQuery.matches);
+  useEffect(() => {
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    motionQuery.addEventListener("change", handler);
+    return () => motionQuery.removeEventListener("change", handler);
+  }, [motionQuery]);
 
   // ── Scroll ───────────────────────────────────────────────────────────────
 
