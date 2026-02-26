@@ -18,9 +18,9 @@
 
 ## About
 
-A terminal-style personal homepage for Martin Zachariassen. Instead of a traditional portfolio layout, everything is navigated through typed commands - `about`, `experience`, `skills`, `links`, and more.
+A terminal-style personal homepage for **Martin Zachariassen** — back-end developer with 9 years of experience in architecture, integrations and production services. Instead of a traditional portfolio layout, everything is navigated through typed commands: `about`, `experience`, `skills`, `links`, and more.
 
-Built with **React**, **TypeScript** and **Vite**. Styled with a [Tokyo Night](https://github.com/enkia/tokyo-night-vscode-theme) colour palette. No CSS framework - just design tokens and plain CSS.
+Built with **React**, **TypeScript** and **Vite**. Styled with a [Tokyo Night](https://github.com/enkia/tokyo-night-vscode-theme) colour palette. No CSS framework — just design tokens and plain CSS.
 
 ---
 
@@ -71,12 +71,25 @@ src/
 ├── main.tsx
 ├── vite-env.d.ts
 ├── components/
+│   ├── NameHeader/
+│   │   ├── NameHeader.tsx     # Name + tagline header shown above the terminal
+│   │   └── NameHeader.css
 │   └── Terminal/
-│       ├── Terminal.tsx       # Main terminal component + command runner
+│       ├── Terminal.tsx       # Main terminal component
 │       ├── Terminal.css
-│       ├── OutputLine.tsx     # Renders a single output line
-│       ├── OutputLine.css
-│       └── useResize.ts       # Drag-to-resize hook (desktop only)
+│       ├── components/
+│       │   ├── OutputLine.tsx  # Renders a single output line
+│       │   ├── OutputLine.css
+│       │   └── TerminalPrompt.tsx  # Input prompt component
+│       ├── hooks/
+│       │   ├── useBanner.ts        # Boot banner logic
+│       │   ├── useCommandRunner.ts # Command dispatch
+│       │   ├── useEasterEggs.ts    # Easter egg triggers
+│       │   ├── useResize.ts        # Drag-to-resize (desktop only)
+│       │   ├── useViewport.ts      # Viewport size tracking
+│       │   └── useViewportEvents.ts
+│       └── state/
+│           └── terminalReducer.ts  # Terminal state management
 ├── easter/
 │   ├── MatrixOverlay.tsx      # Matrix rain canvas effect
 │   ├── MatrixOverlay.css
@@ -84,9 +97,26 @@ src/
 ├── styles/
 │   └── global.css             # Design tokens, reset, global styles
 └── terminal/
-    ├── commands.ts            # Command registry & all command handlers
     ├── parseCommand.ts        # Input parser
-    └── text.ts                # Linkify utility
+    ├── text.ts                # Linkify utility
+    └── commands/
+        ├── index.ts           # Command registry
+        ├── types.ts           # Shared command types
+        ├── about.ts
+        ├── contact.ts
+        ├── easter.ts
+        ├── experience.ts
+        ├── focus.ts
+        ├── help.ts
+        ├── system.ts
+        └── tech/
+            ├── index.ts
+            ├── backend.ts
+            ├── build.ts
+            ├── data.ts
+            ├── ops.ts
+            ├── platform.ts
+            └── testing.ts
 
 public/
 ├── favicon.ico / favicon*.png # All favicon sizes
